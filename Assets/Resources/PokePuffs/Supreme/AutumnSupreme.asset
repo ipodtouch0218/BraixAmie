@@ -1,0 +1,20 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2fba682a9daf83346888a5c8e9244e9c, type: 3}
+  m_Name: AutumnSupreme
+  m_EditorClassIdentifier: 
+  flavor: 0
+  tier: 5
+  eatingStates:
+  - {fileID: 919132149155446097, guid: f946883168387874eb60d32a16624fc8, type: 3}
+  - {fileID: 919132149155446097, guid: 890a7c790357e8a418a9ca6a954da1c8, type: 3}
+  - {fileID: 919132149155446097, guid: cf08bfc5c1356d546ae678d8d0304b38, type: 3}

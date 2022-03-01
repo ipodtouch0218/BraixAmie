@@ -1,0 +1,20 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2fba682a9daf83346888a5c8e9244e9c, type: 3}
+  m_Name: FancyMint
+  m_EditorClassIdentifier: 
+  flavor: 1
+  tier: 2
+  eatingStates:
+  - {fileID: 919132149155446097, guid: dbcf8fb1e7f6cc34cb166cf79ad0546b, type: 3}
+  - {fileID: 919132149155446097, guid: 60e4d00bbc6018d49b7b2e1f74c93729, type: 3}
+  - {fileID: 919132149155446097, guid: 759053140af648842b136187c5ae471a, type: 3}

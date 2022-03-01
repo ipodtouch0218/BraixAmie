@@ -1,0 +1,20 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2fba682a9daf83346888a5c8e9244e9c, type: 3}
+  m_Name: DeluxeSweet
+  m_EditorClassIdentifier: 
+  flavor: 4
+  tier: 4
+  eatingStates:
+  - {fileID: 919132149155446097, guid: 892e1773e6bf48c4dbed05e37a2a7878, type: 3}
+  - {fileID: 919132149155446097, guid: c87afc20468dbb04da91decb198fece7, type: 3}
+  - {fileID: 919132149155446097, guid: 10d39cbaf27a26f4b9526891b6373b64, type: 3}

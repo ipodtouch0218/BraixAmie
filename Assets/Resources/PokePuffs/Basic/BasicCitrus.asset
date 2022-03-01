@@ -1,0 +1,20 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2fba682a9daf83346888a5c8e9244e9c, type: 3}
+  m_Name: BasicCitrus
+  m_EditorClassIdentifier: 
+  flavor: 0
+  tier: 1
+  eatingStates:
+  - {fileID: 2449676146215337302, guid: dca82867c61ce9047a7b6dae36401f88, type: 3}
+  - {fileID: 6992542220048838447, guid: 5fe32a848f867ff4ead8f6f2230af57c, type: 3}
+  - {fileID: 5192196693595161543, guid: 9678d76356651a045951cec51cc23d56, type: 3}

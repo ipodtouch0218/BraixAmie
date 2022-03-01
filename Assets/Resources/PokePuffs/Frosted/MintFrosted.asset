@@ -1,0 +1,20 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2fba682a9daf83346888a5c8e9244e9c, type: 3}
+  m_Name: MintFrosted
+  m_EditorClassIdentifier: 
+  flavor: 1
+  tier: 3
+  eatingStates:
+  - {fileID: 919132149155446097, guid: c6a56c002b1a6594cb135661fbfc676e, type: 3}
+  - {fileID: 919132149155446097, guid: 46f085bbba957c7448bc10b5a9701a3d, type: 3}
+  - {fileID: 919132149155446097, guid: e02124c4f7f66774bbd8033a4ad1ffa6, type: 3}

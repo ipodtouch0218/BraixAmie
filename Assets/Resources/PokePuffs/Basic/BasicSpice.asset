@@ -1,0 +1,20 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2fba682a9daf83346888a5c8e9244e9c, type: 3}
+  m_Name: BasicSpice
+  m_EditorClassIdentifier: 
+  flavor: 3
+  tier: 1
+  eatingStates:
+  - {fileID: 2449676146215337302, guid: 3aa295f07042644469c62b8e9a473f8c, type: 3}
+  - {fileID: 6992542220048838447, guid: ba4fc2134b517ab4aa000b437dcb913c, type: 3}
+  - {fileID: 5192196693595161543, guid: 7d97bf3bbf4720d43b94242bf4a129ac, type: 3}

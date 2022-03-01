@@ -1,0 +1,20 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2fba682a9daf83346888a5c8e9244e9c, type: 3}
+  m_Name: DeluxeMint
+  m_EditorClassIdentifier: 
+  flavor: 1
+  tier: 4
+  eatingStates:
+  - {fileID: 919132149155446097, guid: cc8220f0220cfc74d84ad2617bdc87e5, type: 3}
+  - {fileID: 919132149155446097, guid: e9e28cf10b123b940acfb18970acee67, type: 3}
+  - {fileID: 919132149155446097, guid: 24e27c07be1343945a204d661b40482b, type: 3}

@@ -1,0 +1,164 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<COLLADA version="1.4.1" xmlns="http://www.collada.org/2005/11/COLLADASchema">
+  <asset>
+    <created>2016-02-25T09:13:37Z</created>
+    <modified>2016-02-25T09:13:37Z</modified>
+  </asset>
+  <library_images>
+    <image id="okashi_12_parts_id" name="okashi_12_parts">
+      <init_from>./okashi_12_parts.png</init_from>
+    </image>
+    <image id="okashi_07_base_id" name="okashi_07_base">
+      <init_from>./okashi_07_base.png</init_from>
+    </image>
+  </library_images>
+  <library_materials>
+    <material id="okashi_hlight01_mat_id" name="okashi_hlight01_mat">
+      <instance_effect url="#eff_okashi_hlight01_id" />
+    </material>
+  </library_materials>
+  <library_effects>
+    <effect id="eff_okashi_hlight01_id" name="eff_okashi_hlight01">
+      <profile_COMMON>
+        <newparam sid="img_surface">
+          <surface type="2D">
+            <init_from>okashi_07_base_id</init_from>
+            <format>PNG</format>
+          </surface>
+        </newparam>
+        <newparam sid="img_sampler">
+          <sampler2D>
+            <source>img_surface</source>
+            <wrap_s>WRAP</wrap_s>
+            <wrap_t>WRAP</wrap_t>
+            <minfilter>NEAREST_MIPMAP_LINEAR</minfilter>
+            <magfilter>NEAREST</magfilter>
+            <mipfilter>NEAREST</mipfilter>
+          </sampler2D>
+        </newparam>
+        <technique sid="img_technique">
+          <phong>
+            <emission>
+              <color>0 0 0 1</color>
+            </emission>
+            <ambient>
+              <color>0 0 0 1</color>
+            </ambient>
+            <diffuse>
+              <texture texture="img_sampler" texcoord="uv" />
+            </diffuse>
+            <specular>
+              <color>1 1 1 1</color>
+            </specular>
+          </phong>
+        </technique>
+      </profile_COMMON>
+    </effect>
+  </library_effects>
+  <library_geometries>
+    <geometry id="mesh_0__id" name="mesh_0_">
+      <mesh>
+        <source id="mesh_0__position_id" name="mesh_0__position">
+          <float_array id="mesh_0__position_array_id" count="87">0.196526 0.089205 1.017214 0.196526 0.611406 1.504014 -1.20529 0.797599 0.780104 1.47665 0.558606 0.715674 -0.84239 0.089205 0.738834 1.56275 0.089205 0.651135 -0.325748 -0.254767 0.20187 0.969417 -0.195547 0.162626 0.196526 -0.254767 0.341813 0.196526 1.322557 1.212824 -0.802803 0.5946 -0.3941315 1.4246 0.229377 -1.039786 1.86379 0.728213 0.06837198 1.86379 0.728213 0.06837198 -0.132195 -0.254767 -0.03718501 -0.864517 1.322557 0.546805 1.43 1.276766 0.333129 0.170988 2.039613 -0.060166 -0.430535 -0.070232 -0.421978 -1.11294 1.091491 0.248326 -0.630264 1.322558 -0.824409 0.161762 0.476387 -1.517166 -0.430535 -0.070232 -0.421978 0.667787 -0.254767 -0.278904 0.141181 0.135611 -0.735698 0.161762 0.476387 -1.517166 1.29646 1.322558 -0.842079 1.4246 0.229377 -1.039786 0.161767 1.322558 -1.284713</float_array>
+          <technique_common>
+            <accessor source="#mesh_0__position_array_id" count="29" stride="3">
+              <param name="X" type="float" />
+              <param name="Y" type="float" />
+              <param name="Z" type="float" />
+            </accessor>
+          </technique_common>
+        </source>
+        <source id="mesh_0__normal_id" name="mesh_0__normal">
+          <float_array id="mesh_0__normal_array_id" count="87">-0.0699336 -0.671945 0.737292 0.00705939 -0.0877455 0.996118 -0.88183 -0.0667669 0.466818 0.650157 0.160777 0.742595 -0.651747 -0.701315 0.288762 0.663216 -0.643205 0.382665 -0.447122 -0.894408 -0.0107662 0.284884 -0.957461 0.0459379 0.0172023 -0.951423 0.307407 0.156769 0.651204 0.742534 -0.863115 -0.352018 -0.362099 0.545512 -0.668798 -0.5051 0.978234 0.175208 0.111179 0.978234 0.175208 0.111179 -0.0888559 -0.94643 -0.310442 -0.549815 0.771917 0.319135 0.645991 0.673219 0.359822 -0.0227072 0.99906 -0.0369322 -0.395089 -0.833107 -0.387088 -0.947256 0.18261 -0.263363 -0.736096 0.467171 -0.48981 -0.225697 -0.336988 -0.914057 -0.395089 -0.833107 -0.387088 0.0559878 -0.941125 -0.333391 -0.0196674 -0.876546 -0.480917 -0.225697 -0.336988 -0.914057 0.603647 0.578233 -0.548869 0.545512 -0.668798 -0.5051 -0.0643479 0.618999 -0.782751</float_array>
+          <technique_common>
+            <accessor source="#mesh_0__normal_array_id" count="29" stride="3">
+              <param name="X" type="float" />
+              <param name="Y" type="float" />
+              <param name="Z" type="float" />
+            </accessor>
+          </technique_common>
+        </source>
+        <source id="mesh_0__uv0_id" name="mesh_0__uv0">
+          <float_array id="mesh_0__uv0_array_id" count="58">0.902571 0.415145 0.909704 0.414722 0.910438 0.429689 0.919208 0.38804 0.903108 0.42937 0.91129 0.371923 0.889193 0.434557 0.885446 0.398716 0.890167 0.419371 0.916057 0.415732 0.914649 0.448172 0.773991 0.363716 0.94148 0.390512 0.865624 0.313716 0.881896 0.434421 0.91542 0.428442 0.929962 0.40131 0.926252 0.421596 0.884982 0.456939 0.914679 0.433824 0.925392 0.435975 0.94747 0.440854 0.925048 0.461952 0.860474 0.411252 0.839173 0.446929 0.78404 0.478607 0.941526 0.414338 0.960546 0.41431 0.93699 0.431251</float_array>
+          <technique_common>
+            <accessor source="#mesh_0__uv0_array_id" count="29" stride="2">
+              <param name="S" type="float" />
+              <param name="T" type="float" />
+            </accessor>
+          </technique_common>
+        </source>
+        <vertices id="mesh_0__vertices_id">
+          <input semantic="POSITION" source="#mesh_0__position_id" />
+        </vertices>
+        <triangles material="okashi_hlight01" count="46">
+          <input semantic="VERTEX" source="#mesh_0__vertices_id" offset="0" />
+          <input semantic="NORMAL" source="#mesh_0__normal_id" offset="0" />
+          <input semantic="TEXCOORD" source="#mesh_0__uv0_id" offset="0" set="0" />
+          <p>0 1 2 0 3 1 0 2 4 0 5 3 0 4 6 0 7 5 0 6 8 0 8 7 1 9 2 1 3 9 4 10 6 4 2 10 5 7 11 5 12 3 5 11 13 8 6 14 8 14 7 9 15 2 9 3 16 9 17 15 9 16 17 3 12 16 10 18 6 10 2 19 10 19 20 10 20 21 10 21 22 15 17 20 15 19 2 15 20 19 6 18 14 11 7 23 11 23 24 11 24 25 24 14 18 24 23 14 24 18 25 14 23 7 12 26 16 12 27 26 27 21 26 16 26 17 20 28 21 20 17 28 28 17 26 28 26 21</p>
+        </triangles>
+      </mesh>
+    </geometry>
+  </library_geometries>
+  <library_controllers>
+    <controller id="mesh_0__ctrl_id">
+      <skin source="#mesh_0__id">
+        <bind_shape_matrix>1 0 0 0 0 1 0 0 0 0 1 0 0 0 0 1</bind_shape_matrix>
+        <source id="mesh_0__ctrl_joint_names_id">
+          <Name_array id="mesh_0__ctrl_joint_names_array_id" count="1">okashi17_kakera</Name_array>
+          <technique_common>
+            <accessor source="#mesh_0__ctrl_joint_names_array_id" count="1" stride="1">
+              <param name="JOINT" type="Name" />
+            </accessor>
+          </technique_common>
+        </source>
+        <source id="mesh_0__ctrl_inv_bind_poses_id">
+          <float_array id="mesh_0__ctrl_inv_bind_poses_array_id" count="16">1 0 0 0 0 1 0 -0.355733 0 0 1 0.298496 0 0 0 1</float_array>
+          <technique_common>
+            <accessor source="#mesh_0__ctrl_inv_bind_poses_array_id" count="1" stride="16">
+              <param name="TRANSFORM" type="float4x4" />
+            </accessor>
+          </technique_common>
+        </source>
+        <source id="mesh_0__ctrl_weights_id">
+          <float_array id="mesh_0__ctrl_weights_array_id" count="1">1</float_array>
+          <technique_common>
+            <accessor source="#mesh_0__ctrl_weights_array_id" count="1" stride="1">
+              <param name="WEIGHT" type="float" />
+            </accessor>
+          </technique_common>
+        </source>
+        <joints>
+          <input semantic="JOINT" source="#mesh_0__ctrl_joint_names_id" />
+          <input semantic="INV_BIND_MATRIX" source="#mesh_0__ctrl_inv_bind_poses_id" />
+        </joints>
+        <vertex_weights count="29">
+          <input semantic="JOINT" source="#mesh_0__ctrl_joint_names_id" offset="0" />
+          <input semantic="WEIGHT" source="#mesh_0__ctrl_weights_id" offset="1" />
+          <vcount>1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1</vcount>
+          <v>0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0</v>
+        </vertex_weights>
+      </skin>
+    </controller>
+  </library_controllers>
+  <library_visual_scenes>
+    <visual_scene id="vs_okashi17_kakera_id" name="vs_okashi17_kakera">
+      <node id="okashi17_kakera_bone_id" name="okashi17_kakera" sid="okashi17_kakera" type="JOINT">
+        <matrix>1 0 0 0 0 1 0 0.355733 0 0 1 -0.298496 0 0 0 1</matrix>
+      </node>
+      <node id="vsn_mesh_0__id" name="vsn_mesh_0_" type="NODE">
+        <matrix>1 0 0 0 0 1 0 0 0 0 1 0 0 0 0 1</matrix>
+        <instance_controller url="#mesh_0__ctrl_id">
+          <skeleton>#okashi17_kakera_bone_id</skeleton>
+          <bind_material>
+            <technique_common>
+              <instance_material symbol="okashi_hlight01" target="#okashi_hlight01_mat_id" />
+            </technique_common>
+          </bind_material>
+        </instance_controller>
+      </node>
+    </visual_scene>
+  </library_visual_scenes>
+  <scene>
+    <instance_visual_scene url="#vs_okashi17_kakera_id" />
+  </scene>
+</COLLADA>
