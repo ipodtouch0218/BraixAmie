@@ -57,7 +57,9 @@ public class BraixenController : MonoBehaviour {
         EyeState eyeState = null;
         MouthState mouthState = null;
 
-        timeSinceLastInteraction += Time.deltaTime;
+        if (IsIdle())
+            timeSinceLastInteraction += Time.deltaTime;
+
         headLockTransition = Mathf.Max(0, headLockTransition - Time.deltaTime);
         happiness = Mathf.Max(0, happiness - (Time.deltaTime / 60f * Mathf.Log(happiness + 1)));
 
@@ -82,12 +84,15 @@ public class BraixenController : MonoBehaviour {
             petHand.SetActive(true);
             eyeState = EyeState.HappyEmote;
             mouthState = MouthState.SmallOpen;
-            if ((petTimer -= Time.deltaTime) < 0) {
-                beingPet = false;
+            float petDuration = Settings.braixenSettings.petDuration;
+            petTimer = Mathf.Max(0, petTimer - Time.deltaTime);
+            if (petTimer % petDuration <= Mathf.Max(0, petTimer - Time.deltaTime) % petDuration) {
                 happiness += Settings.braixenSettings.petHappiness;
-                queuedParticles = (int) (Settings.braixenSettings.petHappiness / 2);
+                queuedParticles += (int) (Settings.braixenSettings.petHappiness / 2);
+            }
+            if (petTimer <= 0) {
+                beingPet = false;
                 animator.Play("Pet_agree");
-                petTimer = 0;
                 petHand.SetActive(false);
             }
         }
@@ -95,7 +100,7 @@ public class BraixenController : MonoBehaviour {
 
         if (queuedParticles > 0 && (particleSpawnTimer -= Time.deltaTime) < 0) {
             string name = animator.GetCurrentAnimatorClipInfo(0)[0].clip.name;
-            if (name == "Pet_agree" || name == "Pet_very_happy") {
+            if (name == "Pet_agree" || name == "Pet_very_happy" || beingPet) {
                 heartsParticle.Emit(1);
                 queuedParticles--;
                 particleSpawnTimer = 0.11f;

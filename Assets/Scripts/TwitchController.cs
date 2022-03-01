@@ -98,7 +98,8 @@ public class TwitchController : MonoBehaviour {
             stats.pokepuffsFed++;
         }
         if (args.RewardTitle == settings.twitchSettings.pettingRedemption.redemptionName) {
-            BraixenController.Instance.petTimer = settings.braixenSettings.petDuration;
+            BraixenController.Instance.petTimer += settings.braixenSettings.petDuration;
+            BraixenController.Instance.timeSinceLastInteraction = 0;
 
             ViewerStats stats = statistics.GetStatsOfViewer(args.DisplayName);
             stats.petsGiven++;
