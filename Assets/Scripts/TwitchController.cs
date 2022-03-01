@@ -26,8 +26,10 @@ public class TwitchController : MonoBehaviour {
                 list = puffTable[puff.tier.ToString()] = new();
             list.Add(puff);
         }
-        settings = new(Application.streamingAssetsPath + "/configuration.json");
-        statistics = new(Application.streamingAssetsPath + "/statistics.json");
+        settings = new(Application.persistentDataPath + "/configuration.json");
+        statistics = new(Application.persistentDataPath + "/statistics.json");
+        settings.Save();
+        statistics.Save();
         OnReload();
         
         Connect();
