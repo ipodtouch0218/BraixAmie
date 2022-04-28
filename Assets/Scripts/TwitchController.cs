@@ -94,6 +94,8 @@ public class TwitchController : MonoBehaviour {
             handler.puffType = pokePuff;
             handler.transform.position = new(-1, Random.Range(1.5f, 1.8f), Random.Range(-0.8f, 0.8f));
 
+            Instantiate(Resources.Load("Prefabs/Poof"), handler.transform.position, Quaternion.identity);
+
             ViewerStats stats = statistics.GetStatsOfViewer(args.DisplayName);
             stats.pokepuffsFed++;
         }
@@ -103,6 +105,10 @@ public class TwitchController : MonoBehaviour {
 
             ViewerStats stats = statistics.GetStatsOfViewer(args.DisplayName);
             stats.petsGiven++;
+        }
+        if (args.RewardTitle == settings.twitchSettings.glassesRedemption) {
+            BraixenController.Instance.glasses.SetActive(!BraixenController.Instance.glasses.activeInHierarchy);
+            Instantiate(Resources.Load("Prefabs/Poof"), BraixenController.Instance.glasses.transform.position, Quaternion.identity);
         }
 
         statistics.Save();

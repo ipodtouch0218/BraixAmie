@@ -16,7 +16,7 @@ public class BraixenController : MonoBehaviour {
     public SkinnedMeshRenderer eyeRenderer, mouthRenderer;
     public SkinnedMeshRenderer[] irisRenderers;
 
-    public GameObject petHand;
+    public GameObject petHand, glasses;
 
     public Animator animator;
     public Transform neckTransform, petTarget;

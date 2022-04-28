@@ -30,6 +30,7 @@ public class TwitchSettings {
                     possiblePokePuffTiers = new string[] { "Basic", "Fancy", "Frosted", "Deluxe", "Supreme" } }
          };
     public PetRedemptionSettings pettingRedemption = new();
+    public string glassesRedemption = "Epic Braix Glasses";
 }
 
 [System.Serializable]
