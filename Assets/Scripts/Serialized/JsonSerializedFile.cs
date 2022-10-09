@@ -1,13 +1,13 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 namespace PokeAmie.Serialization {
 
     [System.Serializable]
     public class JsonSerializedFile {
+
         [System.NonSerialized]
         protected System.IO.FileInfo file;
+
         public JsonSerializedFile(string path) {
             file = new(path);
             Load();

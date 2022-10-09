@@ -1,9 +1,8 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "PokePuff", menuName = "Scriptables/PokePuff")]
 public class PokePuff : ScriptableObject {
+
     public PokePuffFlavor flavor = PokePuffFlavor.Citrus;
     public PokePuffTier tier = PokePuffTier.Basic;
     public GameObject[] eatingStates;

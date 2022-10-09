@@ -1,15 +1,10 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class BraixenController : MonoBehaviour {
 
     public static BraixenController Instance { get; private set; }
-    private BaseSettings Settings {
-        get {
-            return TwitchController.Instance.settings;
-        }
-    }
+    private BaseSettings Settings => TwitchController.Instance.settings;
 
     MaterialPropertyBlock eyeBlock, mouthBlock;
     MaterialPropertyBlock[] irisBlocks;
@@ -122,7 +117,7 @@ public class BraixenController : MonoBehaviour {
     }
 
     #region Coroutines
-    IEnumerator CheckForPokepuffs() {
+    private IEnumerator CheckForPokepuffs() {
         while (true) {
             if (!targetPokePuff && !beingPet) {
                 animator.ResetTrigger("idle");
@@ -137,9 +132,9 @@ public class BraixenController : MonoBehaviour {
         }
     }
 
-    IEnumerator AttemptIdleAnimation() {
+    private IEnumerator AttemptIdleAnimation() {
         while (true) {
-            if (timeSinceLastInteraction > Settings.braixenSettings.sleepThresholdInSeconds/4 
+            if (timeSinceLastInteraction > Settings.braixenSettings.sleepThresholdInSeconds/4
                 && timeSinceLastInteraction < Settings.braixenSettings.sleepThresholdInSeconds
                 && Random.value < 0.3f) {
 
@@ -153,12 +148,12 @@ public class BraixenController : MonoBehaviour {
 
 
     #region Animation Stuffs
-    void LookAtLocation(Vector3 target) {
+    private void LookAtLocation(Vector3 target) {
         Quaternion targetRot = Quaternion.LookRotation(target - transform.position - 2 * Vector3.up, Vector3.forward);
         float time = (headLockTransition > 0 ? 12 : 4) * Time.deltaTime;
         previousRotation = neckTransform.rotation = Quaternion.Slerp(previousRotation, targetRot, time);
     }
-    Vector3? FindBestLookTarget() {
+    private Vector3? FindBestLookTarget() {
         if (headLock) {
             if (headLockTransition > 0)
                 return Camera.main.transform.position + (Vector3.down * 2);
@@ -173,16 +168,16 @@ public class BraixenController : MonoBehaviour {
 
         return randomLookPosition;
     }
-    void SetAnimatorStates() {
+    private void SetAnimatorStates() {
         animator.SetBool("happy", happiness > Settings.braixenSettings.happinessThreshold);
         animator.SetBool("sleep", timeSinceLastInteraction > Settings.braixenSettings.sleepThresholdInSeconds);
         animator.SetBool("eating", targetPokePuff != null);
     }
-    bool IsIdle() {
+    private bool IsIdle() {
         return animator.GetCurrentAnimatorStateInfo(0).IsName("Pet_idle");
     }
 
-    void SetStateThisFrame(SkinnedMeshRenderer renderer, MaterialPropertyBlock block, State state, params string[] offsets) {
+    private void SetStateThisFrame(SkinnedMeshRenderer renderer, MaterialPropertyBlock block, State state, params string[] offsets) {
         if (state == null) {
             renderer.SetPropertyBlock(null, 0);
             return;
@@ -195,7 +190,7 @@ public class BraixenController : MonoBehaviour {
     #endregion
 
     #region Eating PokePuffs
-    static int ComparePokepuffs(PokePuffHandler p1, PokePuffHandler p2) {
+    private static int ComparePokepuffs(PokePuffHandler p1, PokePuffHandler p2) {
         return p1.puffType.tier - p2.puffType.tier;
     }
     public void EatPokepuff() {
@@ -229,8 +224,8 @@ public class BraixenController : MonoBehaviour {
 
     public class State {
         public Vector2 vec;
-        public State(float x, float y) { 
-            vec = new(x, y); 
+        public State(float x, float y) {
+            vec = new(x, y);
         }
     }
     public class EyeState : State {

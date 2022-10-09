@@ -1,8 +1,9 @@
+using System.Collections.Generic;
 using PokeAmie.Serialization;
 
 [System.Serializable]
 public class BaseSettings : JsonSerializedFile {
-    public BaseSettings(string file) : base(file) { }
+    public BaseSettings(string file) : base(file) {}
 
     public bool showBackground = true;
     public float volume = 1f;
@@ -26,20 +27,40 @@ public class TwitchSettings {
             new() { redemptionName = "Feed a Frosted PokePuff", possiblePokePuffTiers = new string[] { "Frosted" } },
             new() { redemptionName = "Feed a Deluxe PokePuff", possiblePokePuffTiers = new string[] { "Deluxe" } },
             new() { redemptionName = "Feed a Supreme PokePuff", possiblePokePuffTiers = new string[] { "Supreme" } },
-            new() { redemptionName = "Feed a Random PokePuff",
-                    possiblePokePuffTiers = new string[] { "Basic", "Fancy", "Frosted", "Deluxe", "Supreme" } }
-         };
-    public PetRedemptionSettings pettingRedemption = new();
-    public string glassesRedemption = "Epic Braix Glasses";
+            new() { redemptionName = "Feed a Random PokePuff", possiblePokePuffTiers = new string[] { "Basic", "Fancy", "Frosted", "Deluxe", "Supreme" } }
+        };
+    public RedemptionSettings pettingRedemption = new() { redemptionName = "Pet the Phox" };
+    public EquippableRedemptionSettings[] equippableRedemptions = {
+            new() { redemptionName = "Deal With It", objectTag = "PixelGlasses", useTimer = true, timer = 600 }
+        };
+    public RecolorRedemptionSettings[] recolorRedemptions = {
+            new() { redemptionName = "Shiny-ify the Phox", colorIndex = 1, hasShinyParticles = true, useTimer = true, timer = 600 }
+        };
 }
 
 [System.Serializable]
-public class PuffRedemptionSettings {
+public class RedemptionSettings {
     public string redemptionName;
+}
+
+[System.Serializable]
+public class TimerRedemptionSettings : RedemptionSettings {
+    public bool useTimer;
+    public int timer;
+}
+
+[System.Serializable]
+public class PuffRedemptionSettings : RedemptionSettings {
     public string[] possiblePokePuffTiers;
 }
 
 [System.Serializable]
-public class PetRedemptionSettings {
-    public string redemptionName = "Pet the Phox";
+public class RecolorRedemptionSettings : TimerRedemptionSettings {
+    public int colorIndex;
+    public bool hasShinyParticles;
+}
+
+[System.Serializable]
+public class EquippableRedemptionSettings : TimerRedemptionSettings {
+    public string objectTag;
 }

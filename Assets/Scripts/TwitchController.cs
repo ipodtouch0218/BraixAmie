@@ -1,13 +1,17 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.Audio;
+
 using TwitchLib.Unity;
 
 public class TwitchController : MonoBehaviour {
 
     public static TwitchController Instance { get; private set; }
-    
+
+    private Coroutine recolorCoroutine;
+    private readonly Dictionary<EquippableRedemptionSettings, Coroutine> disableRoutines = new();
     private readonly Dictionary<string, List<PokePuff>> puffTable = new();
     private PubSub twitchApi;
 
@@ -16,6 +20,11 @@ public class TwitchController : MonoBehaviour {
 
     public GameObject background;
     public AudioMixer audioMixer;
+
+    public GameObject[] toggleObjects;
+
+    private GameObject[] shinyObjects;
+    private ShinyMaterialSwapper[] materialSwaps;
 
     [System.Obsolete]
     public void Awake() {
@@ -31,7 +40,10 @@ public class TwitchController : MonoBehaviour {
         settings.Save();
         statistics.Save();
         OnReload();
-        
+
+        materialSwaps = (ShinyMaterialSwapper[]) FindObjectsOfTypeAll(typeof(ShinyMaterialSwapper));
+        shinyObjects = toggleObjects.Where(go => go.CompareTag("Shiny")).ToArray();
+
         Connect();
     }
 
@@ -52,7 +64,7 @@ public class TwitchController : MonoBehaviour {
 
     #region Twitch Functions
     [System.Obsolete]
-    void Connect() {
+    private void Connect() {
         if (twitchApi != null)
             twitchApi.Disconnect();
 
@@ -70,21 +82,21 @@ public class TwitchController : MonoBehaviour {
         Debug.Log("Connected to Twitch");
         twitchApi.SendTopics();
     }
-    
-    private void OnSubscription(object sender, TwitchLib.PubSub.Events.OnChannelSubscriptionArgs args) {
-        BraixenController.Instance.happiness += ParseNullableInt(args.Subscription.Months) * ((int) args.Subscription.SubscriptionPlan + 1);
-        BraixenController.Instance.animator.SetTrigger("emote");
-    }
 
-    private int ParseNullableInt(int? number) {
-        if (number != null)
-            return (int) number;
-        return 1;
-    }
+    //private void OnSubscription(object sender, TwitchLib.PubSub.Events.OnChannelSubscriptionArgs args) {
+    //    BraixenController.Instance.happiness += ParseNullableInt(args.Subscription.Months) * ((int) args.Subscription.SubscriptionPlan + 1);
+    //    BraixenController.Instance.animator.SetTrigger("emote");
+    //}
+
+    //private int ParseNullableInt(int? number) {
+    //    if (number != null)
+    //        return (int) number;
+    //    return 1;
+    //}
 
     private void OnRewardRedeemed(object sender, TwitchLib.PubSub.Events.OnRewardRedeemedArgs args) {
-        
-        PuffRedemptionSettings puffRedemption = FindPuffRedemption(args.RewardTitle);
+
+        PuffRedemptionSettings puffRedemption = FindRedemption(args.RewardTitle, settings.twitchSettings.pokePuffRedemptions);
         if (puffRedemption != null) {
             string[] puffs = puffRedemption.possiblePokePuffTiers;
             List<PokePuff> possibleFlavors = puffTable[puffs[Random.Range(0, puffs.Length)]];
@@ -99,6 +111,39 @@ public class TwitchController : MonoBehaviour {
             ViewerStats stats = statistics.GetStatsOfViewer(args.DisplayName);
             stats.pokepuffsFed++;
         }
+
+        EquippableRedemptionSettings equipRedemption = FindRedemption(args.RewardTitle, settings.twitchSettings.equippableRedemptions);
+        if (equipRedemption != null) {
+            GameObject[] objects = toggleObjects.Where(go => go.CompareTag(equipRedemption.objectTag)).ToArray();
+            foreach (GameObject obj in objects) {
+                obj.SetActive(equipRedemption.useTimer || !obj.activeSelf);
+                Instantiate(Resources.Load("Prefabs/Poof"), obj.transform.position, Quaternion.identity);
+            }
+
+            if (equipRedemption.useTimer) {
+                if (disableRoutines.TryGetValue(equipRedemption, out Coroutine routine))
+                    StopCoroutine(routine);
+
+                disableRoutines[equipRedemption] = StartCoroutine(DisableObjectsInTime(objects, equipRedemption.timer));
+            }
+        }
+
+        RecolorRedemptionSettings recolorRedemption = FindRedemption(args.RewardTitle, settings.twitchSettings.recolorRedemptions);
+        if (recolorRedemption != null) {
+
+            foreach (ShinyMaterialSwapper swapper in materialSwaps)
+                swapper.SetMaterial(recolorRedemption.colorIndex);
+
+            foreach (GameObject shiny in shinyObjects)
+                shiny.SetActive(recolorRedemption.hasShinyParticles);
+
+            if (recolorCoroutine != null)
+                StopCoroutine(recolorCoroutine);
+
+            if (recolorRedemption.useTimer)
+                recolorCoroutine = StartCoroutine(DisableRecolorInTime(recolorRedemption.timer));
+        }
+
         if (args.RewardTitle == settings.twitchSettings.pettingRedemption.redemptionName) {
             BraixenController.Instance.petTimer += settings.braixenSettings.petDuration;
             BraixenController.Instance.timeSinceLastInteraction = 0;
@@ -106,18 +151,32 @@ public class TwitchController : MonoBehaviour {
             ViewerStats stats = statistics.GetStatsOfViewer(args.DisplayName);
             stats.petsGiven++;
         }
-        if (args.RewardTitle == settings.twitchSettings.glassesRedemption) {
-            BraixenController.Instance.glasses.SetActive(!BraixenController.Instance.glasses.activeInHierarchy);
-            Instantiate(Resources.Load("Prefabs/Poof"), BraixenController.Instance.glasses.transform.position, Quaternion.identity);
-        }
 
         statistics.Save();
     }
-    
-    private PuffRedemptionSettings FindPuffRedemption(string name) {
-        foreach (var redemptions in settings.twitchSettings.pokePuffRedemptions) {
-            if (redemptions.redemptionName == name)
-                return redemptions;
+
+    private IEnumerator DisableRecolorInTime(int timer) {
+        yield return new WaitForSeconds(timer);
+
+        foreach (ShinyMaterialSwapper swapper in materialSwaps)
+            swapper.SetMaterial(0);
+
+        foreach (GameObject shiny in shinyObjects)
+            shiny.SetActive(false);
+    }
+
+    private IEnumerator DisableObjectsInTime(GameObject[] objects, int timer) {
+        yield return new WaitForSeconds(timer);
+        foreach (GameObject obj in objects) {
+            obj.SetActive(false);
+            Instantiate(Resources.Load("Prefabs/Poof"), obj.transform.position, Quaternion.identity);
+        }
+    }
+
+    private T FindRedemption<T>(string name, T[] redemptions) where T : RedemptionSettings {
+        foreach (T redemption in redemptions) {
+            if (redemption.redemptionName == name)
+                return redemption;
         }
         return null;
     }
