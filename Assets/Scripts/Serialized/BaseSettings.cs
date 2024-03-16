@@ -1,9 +1,8 @@
-using System.Collections.Generic;
 using PokeAmie.Serialization;
 
 [System.Serializable]
 public class BaseSettings : JsonSerializedFile {
-    public BaseSettings(string file) : base(file) {}
+    public BaseSettings(string file) : base(file) { }
 
     public bool showBackground = true;
     public float volume = 1f;
@@ -31,12 +30,20 @@ public class TwitchSettings {
         };
     public RedemptionSettings pettingRedemption = new() { redemptionName = "Pet the Phox" };
     public EquippableRedemptionSettings[] equippableRedemptions = {
-            new() { redemptionName = "Deal With It", objectTag = "PixelGlasses", useTimer = true, timer = 600 }
+            new() { redemptionName = "Deal With It", objectTag = "PixelGlasses", useTimer = true, timer = 600 },
+            new() { redemptionName = "Deal With It", objectTag = "Crown", useTimer = false, timer = 600 }
         };
     public RecolorRedemptionSettings[] recolorRedemptions = {
             new() { redemptionName = "Shiny-ify the Phox", colorIndex = 1, hasShinyParticles = true, useTimer = true, timer = 600 }
         };
 }
+
+[System.Serializable]
+public class YoutubeSettings {
+    public string channelId = "";
+    public RedemptionSettings pettingCommand = new() { redemptionName = "!pet" };
+}
+
 
 [System.Serializable]
 public class RedemptionSettings {
