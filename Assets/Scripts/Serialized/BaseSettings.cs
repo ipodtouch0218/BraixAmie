@@ -1,25 +1,40 @@
+using UnityEngine;
+
 using PokeAmie.Serialization;
 
 [System.Serializable]
 public class BaseSettings : JsonSerializedFile {
     public BaseSettings(string file) : base(file) { }
 
-    public bool showBackground = true;
     public float volume = 1f;
-    public BraixenSettings braixenSettings = new();
-    public TwitchSettings twitchSettings = new();
+    public GraphicsSettings graphicsSettings;
+    public StreamSettings streamSettings = new();
+    public PokemonSettings pokemonSettings = new();
 }
 
 [System.Serializable]
-public class BraixenSettings {
-    public float petDuration = 2.5f, petHappiness = 10;
-    public float sleepThresholdInSeconds = 180;
+public class GraphicsSettings {
+    public bool showBackground = true;
+    public Color backgroundColor = Color.green;
+}
+
+[System.Serializable]
+public class PokemonSettings {
+    public string pokemonName = "Braixen";
+    public float petDuration = 2.5f, petHappiness = 20;
+    public float sleepThresholdInSeconds = 300;
     public float happinessThreshold = 60;
 }
 
 [System.Serializable]
+public class StreamSettings {
+    public TwitchSettings twitchSettings;
+    public YoutubeSettings youtubeSettings;
+}
+
+[System.Serializable]
 public class TwitchSettings {
-    public string channelId = "80535602";
+    public string channelId = "<YOUR TWITCH CHANNEL ID HERE>";
     public PuffRedemptionSettings[] pokePuffRedemptions = {
             new() { redemptionName = "Feed a Basic PokePuff", possiblePokePuffTiers = new string[] { "Basic" } },
             new() { redemptionName = "Feed a Fancy PokePuff", possiblePokePuffTiers = new string[] { "Fancy" } },
@@ -40,7 +55,7 @@ public class TwitchSettings {
 
 [System.Serializable]
 public class YoutubeSettings {
-    public string channelId = "";
+    public string oAuth2Key = "<YOUR YOUTUBE OAUTH KEY HERE>";
     public RedemptionSettings pettingCommand = new() { redemptionName = "!pet" };
 }
 

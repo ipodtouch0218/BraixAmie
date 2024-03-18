@@ -1,16 +1,34 @@
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "PokePuff", menuName = "Scriptables/PokePuff")]
-public class PokePuff : ScriptableObject {
+public class PokePuff : MonoBehaviour {
 
-    public PokePuffFlavor flavor = PokePuffFlavor.Citrus;
-    public PokePuffTier tier = PokePuffTier.Basic;
-    public GameObject[] eatingStates;
+    //---Properties
+    public ScriptablePokePuff PokePuffType { get; set; }
 
-    public enum PokePuffFlavor {
-        Citrus, Mint, Mocha, Spice, Sweet
+    //---Private Variables
+    private int eatState = 3;
+    private GameObject modelObject;
+
+    public void Start() {
+        UpdateModel();
     }
-    public enum PokePuffTier {
-        Basic = 1, Fancy, Frosted, Deluxe, Supreme
+
+    public bool Eat() {
+        if (--eatState <= 0) {
+            Destroy(gameObject);
+            return true;
+        }
+
+        UpdateModel();
+        return false;
+    }
+
+    private void UpdateModel() {
+        if (modelObject) {
+            Destroy(modelObject);
+        }
+
+        modelObject = Instantiate(PokePuffType.eatingStates[^eatState], transform);
+        modelObject.name = "PokePuff Model";
     }
 }

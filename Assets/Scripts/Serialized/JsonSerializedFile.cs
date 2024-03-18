@@ -1,28 +1,32 @@
+using System;
+using System.IO;
 using UnityEngine;
 
 namespace PokeAmie.Serialization {
 
-    [System.Serializable]
+    [Serializable]
     public class JsonSerializedFile {
 
-        [System.NonSerialized]
-        protected System.IO.FileInfo file;
+        [NonSerialized]
+        protected FileInfo file;
 
         public JsonSerializedFile(string path) {
-            file = new(path);
+            file = new FileInfo(path);
             Load();
         }
+
         public void Load() {
             try {
-                JsonUtility.FromJsonOverwrite(System.IO.File.ReadAllText(file.FullName), this);
-            } catch (System.Exception) {
+                JsonUtility.FromJsonOverwrite(File.ReadAllText(file.FullName), this);
+            } catch (Exception) {
                 Debug.LogWarning($"Unable to load from {file.FullName}. Does it not exist? Generating default file.");
-                Save();
             }
+            Save();
         }
+
         public void Save() {
             file.Directory.Create();
-            System.IO.File.WriteAllText(file.FullName, JsonUtility.ToJson(this, true));
+            File.WriteAllText(file.FullName, JsonUtility.ToJson(this, true));
         }
     }
 }

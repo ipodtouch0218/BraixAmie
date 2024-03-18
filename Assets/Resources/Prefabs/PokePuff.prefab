@@ -42,12 +42,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 2041878710659473429}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 29140ddca46d6ab45aebfcc0cc4ac157, type: 3}
+  m_Script: {fileID: 11500000, guid: 6382c8ed8ffee6c4ba0351f3d21aaf2b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   outlineMaterial: {fileID: 2100000, guid: a32c7194b50025a4287959554df02616, type: 2}
-  puffType: {fileID: 11400000, guid: 10cb2a05198ad0c4f9bffe7fc7140b1d, type: 2}
-  eatState: 3
 --- !u!82 &7078461761014032446
 AudioSource:
   m_ObjectHideFlags: 0

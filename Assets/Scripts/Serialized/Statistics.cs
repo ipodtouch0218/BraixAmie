@@ -1,24 +1,27 @@
+using System;
 using System.Collections.Generic;
+using System.Linq;
 
 using PokeAmie.Serialization;
 
-[System.Serializable]
+[Serializable]
 public class Statistics : JsonSerializedFile {
     public Statistics(string path) : base(path) { }
     public List<ViewerStats> viewerStats = new();
 
     public ViewerStats GetStatsOfViewer(string viewerId) {
-        foreach (ViewerStats stats in viewerStats) {
-            if (stats.viewerId.ToLower() == viewerId.ToLower())
-                return stats;
+        ViewerStats stats = viewerStats.FirstOrDefault(stats => string.Equals(stats.viewerId, viewerId, StringComparison.CurrentCultureIgnoreCase));
+        if (stats != null) {
+            return stats;
         }
-        ViewerStats newStats = new() { viewerId = viewerId };
-        viewerStats.Add(newStats);
-        return newStats;
+
+        stats = new ViewerStats() { viewerId = viewerId };
+        viewerStats.Add(stats);
+        return stats;
     }
 }
 
-[System.Serializable]
+[Serializable]
 public class ViewerStats {
     public string viewerId;
     public int pokepuffsFed, petsGiven;

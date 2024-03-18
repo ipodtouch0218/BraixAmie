@@ -1,75 +1,104 @@
+using System;
 using System.Collections;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 public class PokemonController : MonoBehaviour {
 
+    //---Static
     public static PokemonController Instance { get; private set; }
-    private BaseSettings Settings => TwitchController.Instance.settings;
+    private static BaseSettings Settings => GlobalManager.Instance.settings;
 
-    MaterialPropertyBlock eyeBlock, mouthBlock;
-    MaterialPropertyBlock[] irisBlocks;
-    public SkinnedMeshRenderer eyeRenderer, mouthRenderer;
-    public SkinnedMeshRenderer[] irisRenderers;
+    private static readonly int ParamHappy = Animator.StringToHash("happy");
+    private static readonly int ParamSleep = Animator.StringToHash("sleep");
+    private static readonly int ParamEating = Animator.StringToHash("eating");
+    private static readonly int ParamIdle = Animator.StringToHash("idle");
+    private static readonly int ParamEmote = Animator.StringToHash("emote");
 
-    public GameObject petHand;
+    //---Serialized Variables
+    [SerializeField] private SkinnedMeshRenderer eyeRenderer, mouthRenderer;
+    [SerializeField] private SkinnedMeshRenderer[] irisRenderers;
+    [SerializeField] private Animator animator;
+    [SerializeField] private AudioSource sfx;
+    [SerializeField] private Quaternion neckOffset = Quaternion.identity;
+    [SerializeField] private Transform[] neckTransforms;
 
-    public Animator animator;
-    public Transform neckTransform, petTarget;
-    public Quaternion neckOffset = Quaternion.identity;
-    public float happiness, timeSinceLastInteraction;
+    [SerializeField] private EyeState petEyeState;
+    [SerializeField] private MouthState petMouthState;
 
-    public bool headLock, beingPet;
-    public PokePuffHandler targetPokePuff;
+    //---Private Variables
+    private MaterialPropertyBlock eyeBlock, mouthBlock;
+    private MaterialPropertyBlock[] irisBlocks;
 
-    public Quaternion previousRotation;
+    private Quaternion[] previousRotations;
+
+    private PokePuff targetPokePuff;
+    private float happiness;
+    private int queuedParticles;
+    private bool headLock, beingPet;
+
+
+
+    public Transform petTarget;
+    public float timeSinceLastInteraction;
+
 
     public float headLockTransition, petTimer, randomLookTimer, particleSpawnTimer;
     public Vector3? randomLookPosition;
 
-    public ParticleSystem heartsParticle;
-    private ParticleSystem.EmissionModule emissionModule;
-    private AudioSource sfx;
+    private ParticleSystem.EmissionModule heartsEmission;
 
-    public int queuedParticles;
+
+    public void OnValidate() {
+        this.SetIfNull(ref sfx, Utils.GetComponentSearch.Children);
+        this.SetIfNull(ref animator, Utils.GetComponentSearch.Children);
+    }
 
     public void Start() {
         Instance = this;
-        animator = GetComponentInChildren<Animator>();
-        sfx = GetComponentInChildren<AudioSource>();
-        previousRotation = neckTransform.rotation;
-        StartCoroutine(CheckForPokepuffs());
-        StartCoroutine(AttemptIdleAnimation());
 
-        emissionModule = heartsParticle.emission;
+        previousRotations = new Quaternion[neckTransforms.Length];
+        for (int i = 0; i < neckTransforms.Length; i++) {
+            previousRotations[i] = neckTransforms[i].rotation;
+        }
+        heartsEmission = GlobalManager.Instance.hearts.emission;
 
-        eyeRenderer.GetPropertyBlock(eyeBlock = new());
-        mouthRenderer.GetPropertyBlock(mouthBlock = new());
+        // Create material blocks
+        eyeRenderer.GetPropertyBlock(eyeBlock = new MaterialPropertyBlock());
+        mouthRenderer.GetPropertyBlock(mouthBlock = new MaterialPropertyBlock());
+
         irisBlocks = new MaterialPropertyBlock[irisRenderers.Length];
         for (int i = 0; i < irisRenderers.Length; i++) {
-            irisRenderers[i].GetPropertyBlock(irisBlocks[i] = new());
+            irisRenderers[i].GetPropertyBlock(irisBlocks[i] = new MaterialPropertyBlock());
         }
+
+        // Start corotuines
+        StartCoroutine(CheckForPokepuffs());
+        StartCoroutine(AttemptIdleAnimation());
     }
 
     public void Update() {
         EyeState eyeState = null;
         MouthState mouthState = null;
 
-        if (IsIdle() && Input.GetMouseButton(0)) {
-            randomLookPosition = Camera.main.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, 6.5f));
-            randomLookTimer = 20;
-        }
-        if (Input.GetMouseButtonUp(0)) {
-            randomLookPosition = Camera.main.transform.position;
-        }
-
         if (IsIdle()) {
-            timeSinceLastInteraction += Time.deltaTime;
+            if (Input.GetMouseButton(0)) {
+                // Left click to look around
+                randomLookPosition = Camera.main.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, 6.5f));
+                randomLookTimer = 20;
+
+            } else if (Input.GetMouseButtonUp(0)) {
+                // Left click released
+                randomLookPosition = Camera.main.transform.position;
+
+            } else {
+                // Increase interaction timer
+                timeSinceLastInteraction += Time.deltaTime;
+            }
         }
 
-        headLockTransition = Mathf.Max(0, headLockTransition - Time.deltaTime);
         happiness = Mathf.Max(0, happiness - (Time.deltaTime / 60f * Mathf.Log(happiness + 1)));
-
-        emissionModule.rateOverTime = Mathf.Max(0, Mathf.Min(8, happiness / 80f));
+        heartsEmission.rateOverTime = Mathf.Max(0, Mathf.Min(8, happiness / 80f));
 
         if ((randomLookTimer -= Time.deltaTime) <= 0) {
             randomLookTimer = Random.Range(1f, 3f);
@@ -77,7 +106,7 @@ public class PokemonController : MonoBehaviour {
                 randomLookPosition = Camera.main.transform.position;
                 randomLookTimer += 20f;
             } else {
-                Vector3 target = transform.position + (transform.forward * 3f) + (Vector3.up * 1.5f);
+                Vector3 target = neckTransforms[0].position + (transform.forward * 3f);
                 target.y += Random.Range(-1.1f, 1.1f);
                 target.z += Random.Range(-2f, 2f);
                 randomLookPosition = target;
@@ -86,15 +115,17 @@ public class PokemonController : MonoBehaviour {
 
         beingPet = IsIdle() && !targetPokePuff && petTimer > 0;
         if (beingPet) {
-            animator.ResetTrigger("idle");
+            GameObject petHand = GlobalManager.Instance.petHand;
+
+            animator.ResetTrigger(ParamIdle);
             petHand.SetActive(true);
-            eyeState = EyeState.HappyEmote;
-            mouthState = MouthState.SmallOpen;
-            float petDuration = Settings.braixenSettings.petDuration;
+            eyeState = petEyeState;
+            mouthState = petMouthState;
+            float petDuration = Settings.pokemonSettings.petDuration;
             petTimer = Mathf.Max(0, petTimer - Time.deltaTime);
             if (petTimer % petDuration <= Mathf.Max(0, petTimer - Time.deltaTime) % petDuration) {
-                happiness += Settings.braixenSettings.petHappiness;
-                queuedParticles += (int) (Settings.braixenSettings.petHappiness / 2);
+                happiness += Settings.pokemonSettings.petHappiness;
+                queuedParticles += (int) (Settings.pokemonSettings.petHappiness / 2);
             }
             if (petTimer <= 0) {
                 beingPet = false;
@@ -105,16 +136,16 @@ public class PokemonController : MonoBehaviour {
         SetAnimatorStates();
 
         if (queuedParticles > 0 && (particleSpawnTimer -= Time.deltaTime) < 0) {
-            string name = animator.GetCurrentAnimatorClipInfo(0)[0].clip.name;
-            if (name == "Pet_agree" || name == "Pet_very_happy" || beingPet) {
-                heartsParticle.Emit(1);
+            string clipName = animator.GetCurrentAnimatorClipInfo(0)[0].clip.name;
+            if (clipName == "Pet_agree" || clipName == "Pet_very_happy" || beingPet) {
+                GlobalManager.Instance.hearts.Emit(1);
                 queuedParticles--;
                 particleSpawnTimer = 0.11f;
             }
         }
 
-        SetStateThisFrame(eyeRenderer, eyeBlock, eyeState, "_BaseMapOffset");
-        SetStateThisFrame(mouthRenderer, mouthBlock, mouthState, "_BaseMapOffset");
+        SetStateThisFrame(eyeRenderer, eyeBlock, eyeState, "_BaseMapOffset", "_OcclusionMapOffset", "_NormalMapOffset");
+        SetStateThisFrame(mouthRenderer, mouthBlock, mouthState, "_BaseMapOffset", "_OcclusionMapOffset", "_NormalMapOffset");
         for (int i = 0; i < irisRenderers.Length; i++) {
             irisRenderers[i].enabled = eyeState == null || eyeState.showIris;
             SetStateThisFrame(irisRenderers[i], irisBlocks[i], eyeState, "_BaseMapOffset", "_OcclusionMapOffset", "_NormalMapOffset");
@@ -122,52 +153,72 @@ public class PokemonController : MonoBehaviour {
     }
 
     public void LateUpdate() {
-        Vector3? target = FindBestLookTarget();
-        if (target != null) {
-            LookAtLocation((Vector3) target);
-        }
+        LookAtLocation(FindBestLookTarget());
+        headLockTransition = Mathf.Max(0, headLockTransition - Time.deltaTime);
     }
 
     #region Coroutines
     private IEnumerator CheckForPokepuffs() {
+        WaitForSeconds waitOneSecond = new(1);
+
         while (true) {
             if (!targetPokePuff && !beingPet) {
-                animator.ResetTrigger("idle");
-                PokePuffHandler[] pokePuffs = FindObjectsOfType<PokePuffHandler>();
+                animator.ResetTrigger(ParamIdle);
+
+                PokePuff[] pokePuffs = FindObjectsOfType<PokePuff>();
                 if (pokePuffs.Length > 0) {
                     System.Array.Sort(pokePuffs, ComparePokepuffs);
                     targetPokePuff = pokePuffs[0];
                     timeSinceLastInteraction = 0f;
                 }
             }
-            yield return new WaitForSeconds(1f);
+            yield return waitOneSecond;
         }
     }
 
     private IEnumerator AttemptIdleAnimation() {
+        WaitForSeconds waitFiveSeconds = new(5);
+
         while (true) {
-            if (timeSinceLastInteraction > Settings.braixenSettings.sleepThresholdInSeconds/4
-                && timeSinceLastInteraction < Settings.braixenSettings.sleepThresholdInSeconds
+            if (timeSinceLastInteraction > Settings.pokemonSettings.sleepThresholdInSeconds/4
+                && timeSinceLastInteraction < Settings.pokemonSettings.sleepThresholdInSeconds
                 && Random.value < 0.3f) {
 
-                animator.SetTrigger("idle");
+                animator.SetTrigger(ParamIdle);
             }
-            yield return new WaitForSeconds(5f);
+
+            yield return waitFiveSeconds;
         }
     }
 
     #endregion
 
     #region Animation Stuffs
-    private void LookAtLocation(Vector3 target) {
-        Quaternion targetRot = Quaternion.LookRotation(target - transform.position - 2 * Vector3.up, Vector3.forward) * neckOffset;
-        float time = (headLockTransition > 0 ? 12 : 4) * Time.deltaTime;
-        previousRotation = neckTransform.rotation = Quaternion.Slerp(previousRotation, targetRot, time);
+    private void LookAtLocation(Vector3? target) {
+        float time = 4f * Time.deltaTime;
+
+        for (int i = 0; i < neckTransforms.Length; i++) {
+            Transform t = neckTransforms[i];
+
+            Quaternion newRotation;
+            if (target == null) {
+                // Previous to current
+                newRotation = headLockTransition > 0 ? Quaternion.Slerp(previousRotations[i], t.rotation, 1f - (headLockTransition / (1 / 7f))) : t.rotation;
+            } else {
+                // Current to target
+                Vector3 forward = target.Value - t.position;
+                Quaternion targetRot = Quaternion.LookRotation(forward, Vector3.forward) * neckOffset;
+                newRotation = Quaternion.Slerp(previousRotations[i], targetRot, time);
+            }
+
+            t.rotation = previousRotations[i] = newRotation;
+        }
     }
+
     private Vector3? FindBestLookTarget() {
         if (headLock) {
             if (headLockTransition > 0) {
-                return Camera.main.transform.position + (Vector3.down * 2);
+                return null;
             }
 
             return null;
@@ -183,17 +234,18 @@ public class PokemonController : MonoBehaviour {
 
         return randomLookPosition;
     }
+
     private void SetAnimatorStates() {
-        animator.SetBool("happy", happiness > Settings.braixenSettings.happinessThreshold);
-        animator.SetBool("sleep", timeSinceLastInteraction > Settings.braixenSettings.sleepThresholdInSeconds);
-        animator.SetBool("eating", targetPokePuff != null);
+        animator.SetBool(ParamHappy, happiness > Settings.pokemonSettings.happinessThreshold);
+        animator.SetBool(ParamSleep, timeSinceLastInteraction > Settings.pokemonSettings.sleepThresholdInSeconds);
+        animator.SetBool(ParamEating, targetPokePuff != null);
     }
 
     private bool IsIdle() {
         return animator.GetCurrentAnimatorStateInfo(0).IsName("Pet_idle");
     }
 
-    private void SetStateThisFrame(Renderer renderer, MaterialPropertyBlock block, State state, params string[] offsets) {
+    private static void SetStateThisFrame(Renderer renderer, MaterialPropertyBlock block, State state, params string[] offsets) {
         if (state == null) {
             renderer.SetPropertyBlock(null, 0);
             return;
@@ -209,20 +261,21 @@ public class PokemonController : MonoBehaviour {
     #endregion
 
     #region Eating PokePuffs
-    private static int ComparePokepuffs(PokePuffHandler p1, PokePuffHandler p2) {
-        return p1.puffType.tier - p2.puffType.tier;
+    private static int ComparePokepuffs(PokePuff p1, PokePuff p2) {
+        return p1.PokePuffType.tier - p2.PokePuffType.tier;
     }
+
     public void EatPokepuff() {
         if (!targetPokePuff) {
             return;
         }
 
-        targetPokePuff.Eat();
-        if (targetPokePuff.eatState == 0) {
-            int tier = (int) targetPokePuff.puffType.tier + 1;
-            happiness += tier * tier;
-            queuedParticles += (int) (tier * tier / 4);
-            animator.SetTrigger("emote");
+        if (targetPokePuff.Eat()) {
+            int tier = (int) targetPokePuff.PokePuffType.tier + 1;
+            int additionalHappiness = tier * tier;
+            happiness += additionalHappiness;
+            queuedParticles += additionalHappiness / 4;
+            animator.SetTrigger(ParamEmote);
         }
     }
     #endregion
@@ -237,7 +290,9 @@ public class PokemonController : MonoBehaviour {
     }
     public void UnlockHead() {
         if (headLock) {
-            previousRotation = neckTransform.rotation;
+            for (int i = 0; i < neckTransforms.Length; i++) {
+                previousRotations[i] = neckTransforms[i].rotation;
+            }
         }
 
         headLock = false;
@@ -246,12 +301,14 @@ public class PokemonController : MonoBehaviour {
         sfx.PlayOneShot((AudioClip) Resources.Load(sound));
     }
 
+    [Serializable]
     public class State {
         public Vector2 vec;
         public State(float x, float y) {
-            vec = new(x, y);
+            vec = new Vector2(x, y);
         }
     }
+    [Serializable]
     public class EyeState : State {
         public static EyeState NormalOpen = new(0, 1, true), NeutralClosed = new(0, 1.25f, false), NormalClosed = new(0, 1.25f, false),
             HalfOpen = new(0, 1.75f, true), Angry = new(1, 1, true), Sad = new(1, 1.5f, true), HappyEmote = new(1, 1.75f, false);
@@ -260,6 +317,7 @@ public class PokemonController : MonoBehaviour {
             showIris = iris;
         }
     }
+    [Serializable]
     public class MouthState : State {
         public static MouthState NormalSmile = new(0, 0), Neutral = new(0, 0.25f), BigOpen = new(0, 0.5f),
             MediumOpen = new(0, 0.75f), SmallOpen = new(1, 0), Angry = new(1, 0.5f), Frown = new(1, 0.75f);
