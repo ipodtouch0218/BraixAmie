@@ -13,6 +13,8 @@ public class ShinyMaterialSwapper : MonoBehaviour {
     }
 
     public void SetMaterial(int index) {
-        smr.material = materials[index];
+        if (smr) {
+            smr.material = materials[index];
+        }
     }
 }

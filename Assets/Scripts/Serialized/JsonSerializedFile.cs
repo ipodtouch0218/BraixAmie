@@ -8,7 +8,7 @@ namespace PokeAmie.Serialization {
     public class JsonSerializedFile {
 
         [NonSerialized]
-        protected FileInfo file;
+        public FileInfo file;
 
         public JsonSerializedFile(string path) {
             file = new FileInfo(path);

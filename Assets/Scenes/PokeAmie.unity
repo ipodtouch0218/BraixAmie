@@ -1064,6 +1064,7 @@ GameObject:
   - component: {fileID: 1394798441}
   - component: {fileID: 1394798438}
   - component: {fileID: 1394798440}
+  - component: {fileID: 1394798442}
   m_Layer: 0
   m_Name: GlobalManager
   m_TagString: Untagged
@@ -1124,6 +1125,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   settings:
     volume: 0
+    micMinInput: 0
     graphicsSettings:
       showBackground: 1
       backgroundColor: {r: 0, g: 1, b: 0, a: 1}
@@ -1189,6 +1191,18 @@ MonoBehaviour:
   allPokemon:
   - {fileID: 11400000, guid: 93b7a244d2343484e838af54fb3922f5, type: 2}
   - {fileID: 11400000, guid: 18e9691d5de2d754083036862aad55e5, type: 2}
+--- !u!114 &1394798442
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1394798436}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b86bc689e38766444a1296aed586c0c2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1687258581
 GameObject:
   m_ObjectHideFlags: 0

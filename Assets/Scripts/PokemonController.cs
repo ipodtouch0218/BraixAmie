@@ -15,6 +15,9 @@ public class PokemonController : MonoBehaviour {
     private static readonly int ParamIdle = Animator.StringToHash("idle");
     private static readonly int ParamEmote = Animator.StringToHash("emote");
 
+    //---Properties
+    public int CurrentMaterial { get; private set; }
+
     //---Serialized Variables
     [SerializeField] private SkinnedMeshRenderer eyeRenderer, mouthRenderer;
     [SerializeField] private SkinnedMeshRenderer[] irisRenderers;
@@ -25,10 +28,13 @@ public class PokemonController : MonoBehaviour {
 
     [SerializeField] private EyeState petEyeState;
     [SerializeField] private MouthState petMouthState;
+    [SerializeField] private EyeState talkEyeState;
+    [SerializeField] private MouthState talkMouthState;
 
     //---Private Variables
     private MaterialPropertyBlock eyeBlock, mouthBlock;
     private MaterialPropertyBlock[] irisBlocks;
+    private ShinyMaterialSwapper[] materialSwaps;
 
     private Quaternion[] previousRotations;
 
@@ -36,8 +42,6 @@ public class PokemonController : MonoBehaviour {
     private float happiness;
     private int queuedParticles;
     private bool headLock, beingPet;
-
-
 
     public Transform petTarget;
     public float timeSinceLastInteraction;
@@ -48,6 +52,9 @@ public class PokemonController : MonoBehaviour {
 
     private ParticleSystem.EmissionModule heartsEmission;
 
+    private Vector3 startPosition;
+    private float talkTimer, talkStartTimer, talkStartCooldown;
+
 
     public void OnValidate() {
         this.SetIfNull(ref sfx, Utils.GetComponentSearch.Children);
@@ -56,6 +63,7 @@ public class PokemonController : MonoBehaviour {
 
     public void Start() {
         Instance = this;
+        startPosition = transform.localPosition;
 
         previousRotations = new Quaternion[neckTransforms.Length];
         for (int i = 0; i < neckTransforms.Length; i++) {
@@ -71,6 +79,8 @@ public class PokemonController : MonoBehaviour {
         for (int i = 0; i < irisRenderers.Length; i++) {
             irisRenderers[i].GetPropertyBlock(irisBlocks[i] = new MaterialPropertyBlock());
         }
+
+        materialSwaps = FindObjectsOfType<ShinyMaterialSwapper>(true);
 
         // Start corotuines
         StartCoroutine(CheckForPokepuffs());
@@ -94,6 +104,20 @@ public class PokemonController : MonoBehaviour {
             } else {
                 // Increase interaction timer
                 timeSinceLastInteraction += Time.deltaTime;
+            }
+
+            if (MicInput.MicLoudness > Settings.microphoneSettings.minMicAmplitude) {
+                if (talkTimer <= 0 && talkStartCooldown <= 0) {
+                    talkStartTimer = Settings.microphoneSettings.talkStartJumpDuration;
+                }
+
+                talkTimer = Settings.microphoneSettings.talkDuration;
+                talkStartCooldown = Settings.microphoneSettings.talkStartJumpCooldown;
+            }
+
+            if ((talkTimer -= Time.deltaTime) > 0) {
+                eyeState = talkEyeState;
+                mouthState = talkMouthState;
             }
         }
 
@@ -155,6 +179,15 @@ public class PokemonController : MonoBehaviour {
     public void LateUpdate() {
         LookAtLocation(FindBestLookTarget());
         headLockTransition = Mathf.Max(0, headLockTransition - Time.deltaTime);
+
+        Vector3 position = startPosition;
+        if ((talkStartTimer -= Time.deltaTime) > 0) {
+            float timer = talkStartTimer / Settings.microphoneSettings.talkStartJumpDuration;
+            position += Settings.microphoneSettings.talkStartJumpHeight * Mathf.Sin(timer * Mathf.PI) * Vector3.up;
+        }
+
+        talkStartCooldown -= Time.deltaTime;
+        transform.localPosition = position;
     }
 
     #region Coroutines
@@ -167,7 +200,7 @@ public class PokemonController : MonoBehaviour {
 
                 PokePuff[] pokePuffs = FindObjectsOfType<PokePuff>();
                 if (pokePuffs.Length > 0) {
-                    System.Array.Sort(pokePuffs, ComparePokepuffs);
+                    Array.Sort(pokePuffs, ComparePokepuffs);
                     targetPokePuff = pokePuffs[0];
                     timeSinceLastInteraction = 0f;
                 }
@@ -237,7 +270,7 @@ public class PokemonController : MonoBehaviour {
 
     private void SetAnimatorStates() {
         animator.SetBool(ParamHappy, happiness > Settings.pokemonSettings.happinessThreshold);
-        animator.SetBool(ParamSleep, timeSinceLastInteraction > Settings.pokemonSettings.sleepThresholdInSeconds);
+        animator.SetBool(ParamSleep, Settings.pokemonSettings.sleepThresholdInSeconds > 0 && timeSinceLastInteraction > Settings.pokemonSettings.sleepThresholdInSeconds);
         animator.SetBool(ParamEating, targetPokePuff != null);
     }
 
@@ -259,6 +292,26 @@ public class PokemonController : MonoBehaviour {
     }
 
     #endregion
+
+    public void SetMaterial(int index, bool shiny) {
+        GameObject[] shinyObjects = GameObject.FindGameObjectsWithTag("Shiny");
+
+        foreach (ShinyMaterialSwapper swapper in materialSwaps) {
+            swapper.SetMaterial(index);
+        }
+
+        foreach (GameObject shinyObj in shinyObjects) {
+            shinyObj.SetActive(shiny);
+        }
+
+        if (index != CurrentMaterial) {
+            CurrentMaterial = index;
+            Instantiate(
+                Resources.Load("Prefabs/Poof"),
+                Camera.main.transform.position + (3f * Camera.main.transform.forward),
+                Quaternion.identity);
+        }
+    }
 
     #region Eating PokePuffs
     private static int ComparePokepuffs(PokePuff p1, PokePuff p2) {
@@ -288,6 +341,7 @@ public class PokemonController : MonoBehaviour {
 
         headLock = true;
     }
+
     public void UnlockHead() {
         if (headLock) {
             for (int i = 0; i < neckTransforms.Length; i++) {
@@ -297,6 +351,7 @@ public class PokemonController : MonoBehaviour {
 
         headLock = false;
     }
+
     public void PlaySound(string sound) {
         sfx.PlayOneShot((AudioClip) Resources.Load(sound));
     }

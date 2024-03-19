@@ -19,10 +19,9 @@ public class TwitchController : MonoBehaviour {
     private Coroutine recolorCoroutine;
     private readonly Dictionary<EquippableRedemptionSettings, Coroutine> disableRoutines = new();
     private readonly Dictionary<string, List<ScriptablePokePuff>> puffTable = new();
-    private ShinyMaterialSwapper[] materialSwaps;
 
     [Obsolete]
-    public void Awake() {
+    public void Start() {
         Instance = this;
         foreach (ScriptablePokePuff puff in Resources.LoadAll<ScriptablePokePuff>("PokePuffs")) {
             puffTable.TryGetValue(puff.tier.ToString(), out List<ScriptablePokePuff> list);
@@ -30,8 +29,6 @@ public class TwitchController : MonoBehaviour {
             list ??= (puffTable[puff.tier.ToString()] = new List<ScriptablePokePuff>());
             list.Add(puff);
         }
-
-        materialSwaps = FindObjectsOfType<ShinyMaterialSwapper>(true);
 
         Connect();
     }
@@ -63,7 +60,17 @@ public class TwitchController : MonoBehaviour {
 
             Instantiate(Resources.Load("Prefabs/Poof"), handler.transform.position, Quaternion.identity);
         }
-
+        if (Input.GetKeyDown(KeyCode.Alpha3)) {
+            if (Math.Abs(PokemonController.Instance.timeSinceLastInteraction - float.MaxValue) < 0.01) {
+                PokemonController.Instance.timeSinceLastInteraction = 0;
+            } else {
+                PokemonController.Instance.timeSinceLastInteraction = float.MaxValue;
+            }
+        }
+        if (Input.GetKeyDown(KeyCode.Alpha4)) {
+            int newMat = PokemonController.Instance.CurrentMaterial > 0 ? 0 : 1;
+            PokemonController.Instance.SetMaterial(newMat, newMat != 0);
+        }
     }
 
     private void OnPubSubConnected(object sender, EventArgs args) {
@@ -109,19 +116,7 @@ public class TwitchController : MonoBehaviour {
 
         RecolorRedemptionSettings recolorRedemption = FindRedemption(args.RewardTitle, Settings.streamSettings.twitchSettings.recolorRedemptions);
         if (recolorRedemption != null) {
-
-            foreach (ShinyMaterialSwapper swapper in materialSwaps) {
-                swapper.SetMaterial(recolorRedemption.colorIndex);
-            }
-
-            GameObject[] shinyObjects = GameObject.FindGameObjectsWithTag("Shiny");
-            foreach (GameObject shiny in shinyObjects) {
-                shiny.SetActive(recolorRedemption.hasShinyParticles);
-            }
-
-            if (recolorCoroutine != null) {
-                StopCoroutine(recolorCoroutine);
-            }
+            PokemonController.Instance.SetMaterial(recolorRedemption.colorIndex, recolorRedemption.hasShinyParticles);
 
             if (recolorRedemption.useTimer) {
                 recolorCoroutine = StartCoroutine(DisableRecolorInTime(recolorRedemption.timer));
@@ -141,15 +136,7 @@ public class TwitchController : MonoBehaviour {
 
     private IEnumerator DisableRecolorInTime(int timer) {
         yield return new WaitForSeconds(timer);
-
-        foreach (ShinyMaterialSwapper swapper in materialSwaps) {
-            swapper.SetMaterial(0);
-        }
-
-        GameObject[] shinyObjects = GameObject.FindGameObjectsWithTag("Shiny");
-        foreach (GameObject shiny in shinyObjects) {
-            shiny.SetActive(false);
-        }
+        PokemonController.Instance.SetMaterial(0, false);
     }
 
     private static IEnumerator DisableObjectsInTime(IEnumerable<GameObject> objects, int timer) {

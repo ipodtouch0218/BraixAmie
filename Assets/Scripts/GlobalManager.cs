@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.Audio;
@@ -32,6 +33,9 @@ public class GlobalManager : MonoBehaviour {
         if (Input.GetKeyDown(KeyCode.F5)) {
             settings.Load();
             OnReload();
+        }
+        if (Input.GetKeyDown(KeyCode.F4)) {
+            Process.Start(settings.file.FullName);
         }
     }
 

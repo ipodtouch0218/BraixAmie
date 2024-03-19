@@ -251,6 +251,11 @@ MonoBehaviour:
     showIris: 0
   petMouthState:
     vec: {x: 0, y: 0.5}
+  talkEyeState:
+    vec: {x: 0, y: 0}
+    showIris: 0
+  talkMouthState:
+    vec: {x: 0, y: 0.5}
   petTarget: {fileID: 8646630373114092607}
   timeSinceLastInteraction: 0
   headLockTransition: 0

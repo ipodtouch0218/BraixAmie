@@ -1,24 +1,35 @@
+using System;
 using UnityEngine;
 
 using PokeAmie.Serialization;
 
-[System.Serializable]
+[Serializable]
 public class BaseSettings : JsonSerializedFile {
     public BaseSettings(string file) : base(file) { }
 
     public float volume = 1f;
-    public GraphicsSettings graphicsSettings;
+    public MicrophoneSettings microphoneSettings = new();
+    public GraphicsSettings graphicsSettings = new();
     public StreamSettings streamSettings = new();
     public PokemonSettings pokemonSettings = new();
 }
 
-[System.Serializable]
+[Serializable]
+public class MicrophoneSettings {
+    public float minMicAmplitude = 0.0008f;
+    public float talkDuration = 0.1f;
+    public float talkStartJumpHeight = 1.5f;
+    public float talkStartJumpDuration = 0.1f;
+    public float talkStartJumpCooldown = 0.4f;
+}
+
+[Serializable]
 public class GraphicsSettings {
     public bool showBackground = true;
     public Color backgroundColor = Color.green;
 }
 
-[System.Serializable]
+[Serializable]
 public class PokemonSettings {
     public string pokemonName = "Braixen";
     public float petDuration = 2.5f, petHappiness = 20;
@@ -26,13 +37,13 @@ public class PokemonSettings {
     public float happinessThreshold = 60;
 }
 
-[System.Serializable]
+[Serializable]
 public class StreamSettings {
     public TwitchSettings twitchSettings;
     public YoutubeSettings youtubeSettings;
 }
 
-[System.Serializable]
+[Serializable]
 public class TwitchSettings {
     public string channelId = "<YOUR TWITCH CHANNEL ID HERE>";
     public PuffRedemptionSettings[] pokePuffRedemptions = {
@@ -53,36 +64,36 @@ public class TwitchSettings {
         };
 }
 
-[System.Serializable]
+[Serializable]
 public class YoutubeSettings {
     public string oAuth2Key = "<YOUR YOUTUBE OAUTH KEY HERE>";
     public RedemptionSettings pettingCommand = new() { redemptionName = "!pet" };
 }
 
 
-[System.Serializable]
+[Serializable]
 public class RedemptionSettings {
     public string redemptionName;
 }
 
-[System.Serializable]
+[Serializable]
 public class TimerRedemptionSettings : RedemptionSettings {
     public bool useTimer;
     public int timer;
 }
 
-[System.Serializable]
+[Serializable]
 public class PuffRedemptionSettings : RedemptionSettings {
     public string[] possiblePokePuffTiers;
 }
 
-[System.Serializable]
+[Serializable]
 public class RecolorRedemptionSettings : TimerRedemptionSettings {
     public int colorIndex;
     public bool hasShinyParticles;
 }
 
-[System.Serializable]
+[Serializable]
 public class EquippableRedemptionSettings : TimerRedemptionSettings {
     public string objectTag;
 }
