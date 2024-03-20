@@ -15,6 +15,10 @@ public class PokemonController : MonoBehaviour {
     private static readonly int ParamIdle = Animator.StringToHash("idle");
     private static readonly int ParamEmote = Animator.StringToHash("emote");
 
+    private static readonly int ParamBaseMapOffset = Shader.PropertyToID("_BaseMapOffset");
+    private static readonly int ParamOcclusionMapOffset = Shader.PropertyToID("_OcclusionMapOffset");
+    private static readonly int ParamNormalMapOffset = Shader.PropertyToID("_NormalMapOffset");
+
     //---Properties
     public int CurrentMaterial { get; private set; }
 
@@ -28,8 +32,9 @@ public class PokemonController : MonoBehaviour {
 
     [SerializeField] private EyeState petEyeState;
     [SerializeField] private MouthState petMouthState;
-    [SerializeField] private EyeState talkEyeState;
     [SerializeField] private MouthState talkMouthState;
+
+    [SerializeField] private KeyState[] keyStates;
 
     //---Private Variables
     private MaterialPropertyBlock eyeBlock, mouthBlock;
@@ -54,6 +59,8 @@ public class PokemonController : MonoBehaviour {
 
     private Vector3 startPosition;
     private float talkTimer, talkStartTimer, talkStartCooldown;
+
+    private KeyCode? heldCode;
 
 
     public void OnValidate() {
@@ -113,10 +120,34 @@ public class PokemonController : MonoBehaviour {
 
                 talkTimer = Settings.microphoneSettings.talkDuration;
                 talkStartCooldown = Settings.microphoneSettings.talkStartJumpCooldown;
+                timeSinceLastInteraction = 0;
+            }
+
+            foreach (KeyState ks in keyStates) {
+
+                if (Input.GetKeyDown(ks.key)) {
+                    if (heldCode == ks.key) {
+                        heldCode = null;
+                        break;
+                    }
+
+                    heldCode = ks.key;
+                }
+
+                if (heldCode != ks.key) {
+                    continue;
+                }
+
+                if (ks.mouthEnable) {
+                    mouthState = ks.mouth;
+                }
+
+                if (ks.eyeEnable) {
+                    eyeState = ks.eye;
+                }
             }
 
             if ((talkTimer -= Time.deltaTime) > 0) {
-                eyeState = talkEyeState;
                 mouthState = talkMouthState;
             }
         }
@@ -168,11 +199,11 @@ public class PokemonController : MonoBehaviour {
             }
         }
 
-        SetStateThisFrame(eyeRenderer, eyeBlock, eyeState, "_BaseMapOffset", "_OcclusionMapOffset", "_NormalMapOffset");
-        SetStateThisFrame(mouthRenderer, mouthBlock, mouthState, "_BaseMapOffset", "_OcclusionMapOffset", "_NormalMapOffset");
+        SetStateThisFrame(eyeRenderer, eyeBlock, eyeState);
+        SetStateThisFrame(mouthRenderer, mouthBlock, mouthState);
         for (int i = 0; i < irisRenderers.Length; i++) {
             irisRenderers[i].enabled = eyeState == null || eyeState.showIris;
-            SetStateThisFrame(irisRenderers[i], irisBlocks[i], eyeState, "_BaseMapOffset", "_OcclusionMapOffset", "_NormalMapOffset");
+            SetStateThisFrame(irisRenderers[i], irisBlocks[i], eyeState);
         }
     }
 
@@ -278,15 +309,15 @@ public class PokemonController : MonoBehaviour {
         return animator.GetCurrentAnimatorStateInfo(0).IsName("Pet_idle");
     }
 
-    private static void SetStateThisFrame(Renderer renderer, MaterialPropertyBlock block, State state, params string[] offsets) {
+    private static void SetStateThisFrame(Renderer renderer, MaterialPropertyBlock block, State state) {
         if (state == null) {
             renderer.SetPropertyBlock(null, 0);
             return;
         }
 
-        foreach (string offset in offsets) {
-            block.SetVector(offset, state.vec);
-        }
+        block.SetVector(ParamBaseMapOffset, state.vec);
+        block.SetVector(ParamOcclusionMapOffset, state.vec);
+        block.SetVector(ParamNormalMapOffset, state.normals);
 
         renderer.SetPropertyBlock(block, 0);
     }
@@ -359,24 +390,31 @@ public class PokemonController : MonoBehaviour {
     [Serializable]
     public class State {
         public Vector2 vec;
-        public State(float x, float y) {
-            vec = new Vector2(x, y);
+        public Vector2 normals;
+        public State(Vector2 vec, Vector2 normals) {
+            this.vec = vec;
+            this.normals = normals;
         }
     }
     [Serializable]
     public class EyeState : State {
-        public static EyeState NormalOpen = new(0, 1, true), NeutralClosed = new(0, 1.25f, false), NormalClosed = new(0, 1.25f, false),
-            HalfOpen = new(0, 1.75f, true), Angry = new(1, 1, true), Sad = new(1, 1.5f, true), HappyEmote = new(1, 1.75f, false);
         public bool showIris;
-        public EyeState(float x, float y, bool iris) : base(x, y) {
+        public EyeState(Vector2 vec, Vector2 normals, bool iris) : base(vec, normals) {
             showIris = iris;
         }
     }
     [Serializable]
     public class MouthState : State {
-        public static MouthState NormalSmile = new(0, 0), Neutral = new(0, 0.25f), BigOpen = new(0, 0.5f),
-            MediumOpen = new(0, 0.75f), SmallOpen = new(1, 0), Angry = new(1, 0.5f), Frown = new(1, 0.75f);
-        public MouthState(float x, float y) : base(x, y) { }
+        public MouthState(Vector2 vec, Vector2 normals) : base(vec, normals) { }
     }
     #endregion
+
+    [Serializable]
+    public class KeyState {
+        public KeyCode key;
+        public bool mouthEnable;
+        public MouthState mouth;
+        public bool eyeEnable;
+        public EyeState eye;
+    }
 }

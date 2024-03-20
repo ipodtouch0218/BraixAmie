@@ -9084,6 +9084,57 @@ MonoBehaviour:
   neckOffset: {x: 0, y: 0, z: 0, w: 1}
   neckTransforms:
   - {fileID: 6000789296362783558}
+  petEyeState:
+    vec: {x: 0, y: 0.5}
+    normals: {x: 0, y: 0}
+    showIris: 0
+  petMouthState:
+    vec: {x: 0, y: 0}
+    normals: {x: 0, y: 0}
+  talkMouthState:
+    vec: {x: 0, y: 0.75}
+    normals: {x: 0, y: 0}
+  keyStates:
+  - key: 273
+    mouthEnable: 0
+    mouth:
+      vec: {x: 0, y: 0}
+      normals: {x: 0, y: 0}
+    eyeEnable: 1
+    eye:
+      vec: {x: 1, y: 0.75}
+      normals: {x: 0, y: 0}
+      showIris: 0
+  - key: 274
+    mouthEnable: 1
+    mouth:
+      vec: {x: 1, y: 0.75}
+      normals: {x: 0, y: 0}
+    eyeEnable: 1
+    eye:
+      vec: {x: 1, y: 0.5}
+      normals: {x: 0.75, y: 0.5}
+      showIris: 1
+  - key: 275
+    mouthEnable: 1
+    mouth:
+      vec: {x: 1, y: 0.5}
+      normals: {x: 0, y: 0}
+    eyeEnable: 1
+    eye:
+      vec: {x: 1, y: 0}
+      normals: {x: 0.75, y: 1}
+      showIris: 1
+  - key: 276
+    mouthEnable: 1
+    mouth:
+      vec: {x: 0, y: 0.25}
+      normals: {x: 0, y: 0}
+    eyeEnable: 1
+    eye:
+      vec: {x: 0, y: 0.5}
+      normals: {x: 0.25, y: 1}
+      showIris: 0
   petTarget: {fileID: 3115590465101308982}
   timeSinceLastInteraction: 0
   headLockTransition: 0

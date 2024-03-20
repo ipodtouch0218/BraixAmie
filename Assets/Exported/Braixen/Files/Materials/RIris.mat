@@ -74,7 +74,7 @@ Material:
     m_Colors:
     - _BaseMapOffset: {r: 0, g: 0, b: 0, a: 0}
     - _BaseMapTiling: {r: 4, g: 4, b: 0, a: 0}
-    - _NormalMapOffset: {r: 0.25, g: 0, b: 0, a: 0}
+    - _NormalMapOffset: {r: 0.25, g: 1, b: 0, a: 0}
     - _NormalMapTiling: {r: 1, g: 1, b: 0, a: 0}
     - _OcclusionMapOffset: {r: 1, g: 0, b: 0, a: 0}
     - _OcclusionMapTiling: {r: 4, g: 4, b: 0, a: 0}

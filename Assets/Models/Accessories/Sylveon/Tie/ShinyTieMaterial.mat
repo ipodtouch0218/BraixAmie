@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!114 &-7757745919052920234
+--- !u!114 &-5635006272686956869
 MonoBehaviour:
   m_ObjectHideFlags: 11
   m_CorrespondingSourceObject: {fileID: 0}
@@ -20,12 +20,15 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Eye
+  m_Name: ShinyTieMaterial
   m_Shader: {fileID: -6465566751694194690, guid: 707e4c837f2b58240a84f53df2eb732e, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
   m_ValidKeywords: []
-  m_InvalidKeywords: []
+  m_InvalidKeywords:
+  - ' _SHADOWS_SOFT'
+  - _MAIN_LIGHT_CALCULATE_SHADOWS
+  - _MAIN_LIGHT_SHADOW_CASCADE
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
@@ -37,15 +40,15 @@ Material:
     serializedVersion: 3
     m_TexEnvs:
     - _BaseMap:
-        m_Texture: {fileID: 2800000, guid: ae3d0e21808f7254ab1c7fe6593087ac, type: 3}
+        m_Texture: {fileID: 2800000, guid: ca4a3d191735e9d42b961c3660275205, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _NormalMap:
-        m_Texture: {fileID: 2800000, guid: ced6226d6c43fa44a941b52cdcce41d0, type: 3}
+        m_Texture: {fileID: 2800000, guid: 239fe8883b69faf4cae1c8c7b979a2e8, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _OcclusionMap:
-        m_Texture: {fileID: 2800000, guid: 4ca3af7602cda0045a0bb7d08cb8e266, type: 3}
+        m_Texture: {fileID: 2800000, guid: 4704551640d76c2458e920a61433c58d, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _SampleTexture2DLOD_20a7031f97ddfe83aa143ed1bc9c65a2_Texture_1:
@@ -67,16 +70,16 @@ Material:
     m_Ints: []
     m_Floats:
     - Occlusion: 0
-    - _AlphaClipThreshold: 0.532
+    - _AlphaClipThreshold: 0.5
     - _EnableNormals: 0
     - _NormalStrength: 1
     - _QueueControl: 0
     - _QueueOffset: 0
     m_Colors:
-    - _BaseMapOffset: {r: 0, g: 1, b: 0, a: 0}
-    - _BaseMapTiling: {r: 2, g: 1, b: 0, a: 0}
+    - _BaseMapOffset: {r: 0, g: 0, b: 0, a: 0}
+    - _BaseMapTiling: {r: 1, g: 1, b: 0, a: 0}
     - _NormalMapOffset: {r: 0, g: 0, b: 0, a: 0}
     - _NormalMapTiling: {r: 1, g: 1, b: 0, a: 0}
-    - _OcclusionMapOffset: {r: 1, g: 0, b: 0, a: 0}
+    - _OcclusionMapOffset: {r: 0, g: 0, b: 0, a: 0}
     - _OcclusionMapTiling: {r: 2, g: 1, b: 0, a: 0}
   m_BuildTextureStacks: []

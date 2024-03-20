@@ -256,6 +256,39 @@ MonoBehaviour:
     showIris: 0
   talkMouthState:
     vec: {x: 0, y: 0.5}
+  keyStates:
+  - key: 273
+    mouthEnable: 1
+    mouth:
+      vec: {x: 0, y: 0.75}
+    eyeEnable: 1
+    eye:
+      vec: {x: 0, y: 0.25}
+      showIris: 0
+  - key: 275
+    mouthEnable: 0
+    mouth:
+      vec: {x: 0, y: 0}
+    eyeEnable: 1
+    eye:
+      vec: {x: 1, y: 0}
+      showIris: 0
+  - key: 274
+    mouthEnable: 1
+    mouth:
+      vec: {x: 1, y: 0.75}
+    eyeEnable: 1
+    eye:
+      vec: {x: 1, y: 0.5}
+      showIris: 0
+  - key: 276
+    mouthEnable: 1
+    mouth:
+      vec: {x: 0, y: 0.25}
+    eyeEnable: 1
+    eye:
+      vec: {x: 0, y: 0.5}
+      showIris: 1
   petTarget: {fileID: 8646630373114092607}
   timeSinceLastInteraction: 0
   headLockTransition: 0
@@ -9147,6 +9180,46 @@ PrefabInstance:
     m_RemovedComponents: []
     m_AddedGameObjects: []
   m_SourcePrefab: {fileID: 100100000, guid: e422b5a6abf55944eb9b8962ef24fa1b, type: 3}
+--- !u!1 &1242011083351290530 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: -1044543150847035472, guid: e422b5a6abf55944eb9b8962ef24fa1b, type: 3}
+  m_PrefabInstance: {fileID: 6970881687646471442}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &6093490324397579885
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1242011083351290530}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb74367a104e6840a36c1524552fb3e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  materials:
+  - {fileID: 2100000, guid: f09df599f0b70a84a8f7466401a01950, type: 2}
+  - {fileID: 2100000, guid: dc2978f010cc6eb438674f9cbf540700, type: 2}
+--- !u!1 &1938361651544990427 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 8816915920735021001, guid: e422b5a6abf55944eb9b8962ef24fa1b, type: 3}
+  m_PrefabInstance: {fileID: 6970881687646471442}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &9026936320583376335
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1938361651544990427}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb74367a104e6840a36c1524552fb3e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  materials:
+  - {fileID: 2100000, guid: f09df599f0b70a84a8f7466401a01950, type: 2}
+  - {fileID: 2100000, guid: dc2978f010cc6eb438674f9cbf540700, type: 2}
 --- !u!4 &4315456814872400139 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -2639638324218457063, guid: e422b5a6abf55944eb9b8962ef24fa1b, type: 3}

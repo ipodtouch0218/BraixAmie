@@ -1,14 +1,14 @@
 using UnityEngine;
 
-[RequireComponent(typeof(SkinnedMeshRenderer))]
+[RequireComponent(typeof(Renderer))]
 public class ShinyMaterialSwapper : MonoBehaviour {
 
     [SerializeField] private Material[] materials;
 
-    private SkinnedMeshRenderer smr;
+    private Renderer smr;
 
     public void Start() {
-        smr = GetComponent<SkinnedMeshRenderer>();
+        smr = GetComponent<Renderer>();
         SetMaterial(0);
     }
 
