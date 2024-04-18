@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 using PokeAmie.Serialization;
@@ -12,6 +13,7 @@ public class BaseSettings : JsonSerializedFile {
     public GraphicsSettings graphicsSettings = new();
     public StreamSettings streamSettings = new();
     public PokemonSettings pokemonSettings = new();
+    public InputSettings inputSettings = new();
 }
 
 [Serializable]
@@ -26,7 +28,7 @@ public class MicrophoneSettings {
 [Serializable]
 public class GraphicsSettings {
     public bool showBackground = true;
-    public Color backgroundColor = Color.green;
+    public Color32 backgroundColor = Color.green;
 }
 
 [Serializable]
@@ -38,14 +40,31 @@ public class PokemonSettings {
 }
 
 [Serializable]
+public class InputSettings {
+    public bool inputInBackground = true;
+    public Dictionary<string, string> controls = new() {
+        {"pet","1"},
+        {"feed","2"},
+        {"sleep","3"},
+        {"shiny","4"}
+    };
+    public Dictionary<string, string> emotions = new() {
+        {"happy", "UpArrow"},
+        {"angry", "RightArrow"},
+        {"sad", "DownArrow"},
+        {"bored", "LeftArrow"}
+    };
+}
+
+[Serializable]
 public class StreamSettings {
-    public TwitchSettings twitchSettings;
-    public YoutubeSettings youtubeSettings;
+    public TwitchSettings twitchSettings = new();
+    public YoutubeSettings youtubeSettings = new();
 }
 
 [Serializable]
 public class TwitchSettings {
-    public string channelId = "<YOUR TWITCH CHANNEL ID HERE>";
+    public string channelId = "80535602";
     public PuffRedemptionSettings[] pokePuffRedemptions = {
             new() { redemptionName = "Feed a Basic PokePuff", possiblePokePuffTiers = new string[] { "Basic" } },
             new() { redemptionName = "Feed a Fancy PokePuff", possiblePokePuffTiers = new string[] { "Fancy" } },

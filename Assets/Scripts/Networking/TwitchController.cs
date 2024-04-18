@@ -18,7 +18,7 @@ public class TwitchController : MonoBehaviour {
     private PubSub twitchApi;
     private Coroutine recolorCoroutine;
     private readonly Dictionary<EquippableRedemptionSettings, Coroutine> disableRoutines = new();
-    private readonly Dictionary<string, List<ScriptablePokePuff>> puffTable = new();
+    public readonly Dictionary<string, List<ScriptablePokePuff>> puffTable = new();
 
     [Obsolete]
     public void Start() {
@@ -43,34 +43,6 @@ public class TwitchController : MonoBehaviour {
         twitchApi.OnRewardRedeemed += OnRewardRedeemed;
         twitchApi.ListenToRewards(Settings.streamSettings.twitchSettings.channelId);
         twitchApi.Connect();
-    }
-
-    public void Update() {
-        if (Input.GetKeyDown(KeyCode.Alpha1)) {
-            PokemonController.Instance.petTimer += Settings.pokemonSettings.petDuration;
-            PokemonController.Instance.timeSinceLastInteraction = 0;
-        }
-        if (Input.GetKeyDown(KeyCode.Alpha2)) {
-            List<ScriptablePokePuff> possibleFlavors = puffTable.ElementAt(Random.Range(0, puffTable.Count)).Value;
-            ScriptablePokePuff pokePuff = possibleFlavors[Random.Range(0, possibleFlavors.Count)];
-
-            PokePuff handler = ((GameObject) Instantiate(Resources.Load("Prefabs/PokePuff"))).GetComponent<PokePuff>();
-            handler.PokePuffType = pokePuff;
-            handler.transform.position = new Vector3(-1, Camera.main.transform.position.y + Random.Range(-0.5f, -0.2f), Random.Range(-0.8f, 0.8f));
-
-            Instantiate(Resources.Load("Prefabs/Poof"), handler.transform.position, Quaternion.identity);
-        }
-        if (Input.GetKeyDown(KeyCode.Alpha3)) {
-            if (Math.Abs(PokemonController.Instance.timeSinceLastInteraction - float.MaxValue) < 0.01) {
-                PokemonController.Instance.timeSinceLastInteraction = 0;
-            } else {
-                PokemonController.Instance.timeSinceLastInteraction = float.MaxValue;
-            }
-        }
-        if (Input.GetKeyDown(KeyCode.Alpha4)) {
-            int newMat = PokemonController.Instance.CurrentMaterial > 0 ? 0 : 1;
-            PokemonController.Instance.SetMaterial(newMat, newMat != 0);
-        }
     }
 
     private void OnPubSubConnected(object sender, EventArgs args) {

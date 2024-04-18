@@ -1,5 +1,8 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
+using TutorialRunner.Monitoring;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
@@ -48,6 +51,9 @@ public class PokemonController : MonoBehaviour {
     private int queuedParticles;
     private bool headLock, beingPet;
 
+    private bool followMouse;
+    private Vector3? lockedLookPosition;
+
     public Transform petTarget;
     public float timeSinceLastInteraction;
 
@@ -92,6 +98,15 @@ public class PokemonController : MonoBehaviour {
         // Start corotuines
         StartCoroutine(CheckForPokepuffs());
         StartCoroutine(AttemptIdleAnimation());
+
+
+        KeyboardHook.CreateHook();
+        KeyboardHook.KeyPressed += KeyPressed;
+    }
+
+    public void OnDestroy() {
+        KeyboardHook.DisposeHook();
+        KeyboardHook.KeyPressed -= KeyPressed;
     }
 
     public void Update() {
@@ -99,13 +114,33 @@ public class PokemonController : MonoBehaviour {
         MouthState mouthState = null;
 
         if (IsIdle()) {
-            if (Input.GetMouseButton(0)) {
+            if (Input.GetMouseButtonDown(0)) {
                 // Left click to look around
                 randomLookPosition = Camera.main.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, 6.5f));
                 randomLookTimer = 20;
+                followMouse = true;
+                lockedLookPosition = null;
 
-            } else if (Input.GetMouseButtonUp(0)) {
-                // Left click released
+            } else if (followMouse) {
+                // Held left click
+                randomLookPosition = Camera.main.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, 6.5f));
+                randomLookTimer = 20;
+
+                if (Input.GetMouseButtonDown(1)) {
+                    // Lock direction
+                    followMouse = false;
+                    lockedLookPosition = randomLookPosition;
+                    randomLookPosition = Camera.main.transform.position;
+
+                } else if (Input.GetMouseButtonUp(0)) {
+                    // Left click released
+                    followMouse = false;
+                    randomLookPosition = Camera.main.transform.position;
+                }
+            } else if (Input.GetMouseButtonDown(1) && lockedLookPosition.HasValue) {
+                // Right-click unlock direction
+                followMouse = false;
+                lockedLookPosition = randomLookPosition;
                 randomLookPosition = Camera.main.transform.position;
 
             } else {
@@ -124,17 +159,11 @@ public class PokemonController : MonoBehaviour {
             }
 
             foreach (KeyState ks in keyStates) {
-
-                if (Input.GetKeyDown(ks.key)) {
-                    if (heldCode == ks.key) {
-                        heldCode = null;
-                        break;
-                    }
-
-                    heldCode = ks.key;
+                if (!Settings.inputSettings.emotions.TryGetValue(ks.key, out string dictKey) || !Enum.TryParse(dictKey, true, out KeyCode key)) {
+                    continue;
                 }
 
-                if (heldCode != ks.key) {
+                if (heldCode != key) {
                     continue;
                 }
 
@@ -204,6 +233,70 @@ public class PokemonController : MonoBehaviour {
         for (int i = 0; i < irisRenderers.Length; i++) {
             irisRenderers[i].enabled = eyeState == null || eyeState.showIris;
             SetStateThisFrame(irisRenderers[i], irisBlocks[i], eyeState);
+        }
+    }
+
+    private static void HandleControlKey(KeyCode code, string key, Action action) {
+        if (!Settings.inputSettings.controls.TryGetValue(key, out string keyString) ||
+            !Enum.TryParse(keyString, true, out KeyCode actionCode)) {
+            return;
+        }
+
+        if (code == actionCode) {
+            action();
+        }
+    }
+
+    public void KeyPressed(object sender, KeyPressedEventArgs args) {
+
+        if (!Settings.inputSettings.inputInBackground && !Application.isFocused) {
+            return;
+        }
+
+        KeyCode code = args.Info;
+        HandleControlKey(code, "pet", () => {
+            petTimer += Settings.pokemonSettings.petDuration;
+            timeSinceLastInteraction = 0;
+        });
+        HandleControlKey(code, "feed", () => {
+            List<ScriptablePokePuff> possibleFlavors = TwitchController.Instance.puffTable
+                .ElementAt(Random.Range(0, TwitchController.Instance.puffTable.Count)).Value;
+            ScriptablePokePuff pokePuff = possibleFlavors[Random.Range(0, possibleFlavors.Count)];
+
+            PokePuff handler = ((GameObject) Instantiate(Resources.Load("Prefabs/PokePuff"))).GetComponent<PokePuff>();
+            handler.PokePuffType = pokePuff;
+            handler.transform.position = new Vector3(-1, Camera.main.transform.position.y + Random.Range(-0.5f, -0.2f), Random.Range(-0.8f, 0.8f));
+
+            Instantiate(Resources.Load("Prefabs/Poof"), handler.transform.position, Quaternion.identity);
+        });
+        HandleControlKey(code, "sleep", () => {
+            if (Math.Abs(timeSinceLastInteraction - float.MaxValue) < 0.01) {
+                timeSinceLastInteraction = 0;
+            } else {
+                timeSinceLastInteraction = float.MaxValue;
+            }
+        });
+        HandleControlKey(code, "shiny", () => {
+            int newMat = CurrentMaterial > 0 ? 0 : 1;
+            SetMaterial(newMat, newMat != 0);
+        });
+
+        foreach (KeyState ks in keyStates) {
+            if (!Settings.inputSettings.emotions.TryGetValue(ks.key, out string dictKey) ||
+                !Enum.TryParse(dictKey, true, out KeyCode key)) {
+                continue;
+            }
+
+            if (args.Info != key) {
+                continue;
+            }
+
+            if (heldCode == key) {
+                heldCode = null;
+                break;
+            }
+
+            heldCode = key;
         }
     }
 
@@ -296,7 +389,7 @@ public class PokemonController : MonoBehaviour {
             return petTarget.position;
         }
 
-        return randomLookPosition;
+        return lockedLookPosition ?? randomLookPosition;
     }
 
     private void SetAnimatorStates() {
@@ -411,7 +504,7 @@ public class PokemonController : MonoBehaviour {
 
     [Serializable]
     public class KeyState {
-        public KeyCode key;
+        public string key;
         public bool mouthEnable;
         public MouthState mouth;
         public bool eyeEnable;

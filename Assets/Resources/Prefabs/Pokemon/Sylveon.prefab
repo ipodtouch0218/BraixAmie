@@ -248,46 +248,54 @@ MonoBehaviour:
   - {fileID: 7015726657089492752}
   petEyeState:
     vec: {x: 0, y: 0.5}
+    normals: {x: 0, y: 0}
     showIris: 0
   petMouthState:
     vec: {x: 0, y: 0.5}
-  talkEyeState:
-    vec: {x: 0, y: 0}
-    showIris: 0
+    normals: {x: 0, y: 0}
   talkMouthState:
     vec: {x: 0, y: 0.5}
+    normals: {x: 0, y: 0}
   keyStates:
-  - key: 273
+  - key: happy
     mouthEnable: 1
     mouth:
       vec: {x: 0, y: 0.75}
+      normals: {x: 0, y: 0}
     eyeEnable: 1
     eye:
       vec: {x: 0, y: 0.25}
+      normals: {x: 0, y: 0}
       showIris: 0
-  - key: 275
+  - key: angry
     mouthEnable: 0
     mouth:
       vec: {x: 0, y: 0}
+      normals: {x: 0, y: 0}
     eyeEnable: 1
     eye:
       vec: {x: 1, y: 0}
+      normals: {x: 0, y: 0}
       showIris: 0
-  - key: 274
+  - key: sad
     mouthEnable: 1
     mouth:
       vec: {x: 1, y: 0.75}
+      normals: {x: 0, y: 0}
     eyeEnable: 1
     eye:
       vec: {x: 1, y: 0.5}
+      normals: {x: 0, y: 0}
       showIris: 0
-  - key: 276
+  - key: bored
     mouthEnable: 1
     mouth:
       vec: {x: 0, y: 0.25}
+      normals: {x: 0, y: 0}
     eyeEnable: 1
     eye:
       vec: {x: 0, y: 0.5}
+      normals: {x: 0, y: 0}
       showIris: 1
   petTarget: {fileID: 8646630373114092607}
   timeSinceLastInteraction: 0
