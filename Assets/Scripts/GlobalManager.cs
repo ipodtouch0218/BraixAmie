@@ -1,3 +1,4 @@
+using System;
 using System.Diagnostics;
 using System.Linq;
 using UnityEngine;
@@ -7,6 +8,7 @@ public class GlobalManager : MonoBehaviour {
 
     //---Static
     public static GlobalManager Instance { get; private set; }
+    public static event Action<GlobalManager> OnReload;
 
     //---Public Variables
     public BaseSettings settings;
@@ -26,20 +28,21 @@ public class GlobalManager : MonoBehaviour {
     public void Awake() {
         Instance = this;
         LoadFromFile();
-        OnReload();
+        Reload();
     }
 
     public void Update() {
         if (Input.GetKeyDown(KeyCode.F5)) {
             settings.Load();
-            OnReload();
+            Reload();
+            OnReload?.Invoke(this);
         }
         if (Input.GetKeyDown(KeyCode.F4)) {
             Process.Start(settings.file.FullName);
         }
     }
 
-    public void OnReload() {
+    public void Reload() {
         // Set the volume
         audioMixer.SetFloat("Volume", settings.volume);
 

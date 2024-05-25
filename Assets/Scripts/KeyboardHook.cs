@@ -66,8 +66,8 @@ namespace TutorialRunner.Monitoring {
                     callEvent = false;
                 }
 
-                if (callEvent) {
-                    KeyPressed?.Invoke(null, new KeyPressedEventArgs(VKeyMappings[vkCode]));
+                if (callEvent && VKeyMappings.TryGetValue(vkCode, out KeyCode code)) {
+                    KeyPressed?.Invoke(null, new KeyPressedEventArgs(code));
                 }
             }
             return CallNextHookEx(hookID, nCode, wParam, lParam);

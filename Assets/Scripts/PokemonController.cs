@@ -99,7 +99,6 @@ public class PokemonController : MonoBehaviour {
         StartCoroutine(CheckForPokepuffs());
         StartCoroutine(AttemptIdleAnimation());
 
-
         KeyboardHook.CreateHook();
         KeyboardHook.KeyPressed += KeyPressed;
     }
